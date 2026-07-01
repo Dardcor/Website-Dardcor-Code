@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Code2, Terminal, Package, Columns3, ArrowRight } from 'lucide-react';
 
@@ -109,13 +110,13 @@ export default function ProductCards() {
                 </p>
 
                 {/* CTA */}
-                <a
-                  href="#download"
+                <Link
+                  to="/release"
                   className="inline-flex items-center gap-1.5 text-sm font-medium text-dc-400 hover:text-dc-300 transition-colors group/link"
                 >
                   Learn more
                   <ArrowRight size={14} className="transition-transform duration-200 group-hover/link:translate-x-1" />
-                </a>
+                </Link>
               </div>
             </motion.div>
           ))}

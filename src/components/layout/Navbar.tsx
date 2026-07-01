@@ -21,6 +21,9 @@ export default function Navbar() {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
+  // Close mobile menu on navigation
+  const closeMobile = () => setMobileOpen(false);
+
   return (
     <nav
       className={`fixed top-0 inset-x-0 z-50 transition-all duration-300 ${
@@ -31,8 +34,8 @@ export default function Navbar() {
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 md:h-18">
-          {/* Logo */}
-          <a href="#" className="flex items-center gap-3 group">
+          {/* Logo — always to home */}
+          <Link to="/" onClick={closeMobile} className="flex items-center gap-3 group">
             <img
               src="/dardcor.png"
               alt="Dardcor"
@@ -41,11 +44,11 @@ export default function Navbar() {
             <span className="font-display font-semibold text-lg text-text-primary tracking-tight">
               Dardcor <span className="text-dc-400">Code</span>
             </span>
-          </a>
+          </Link>
 
           {/* Desktop Nav */}
           <div className="hidden md:flex items-center gap-1">
-            {/* Products Dropdown */}
+            {/* Products Dropdown — always to home */}
             <div
               className="relative"
               onMouseEnter={() => setProductsOpen(true)}
@@ -69,9 +72,10 @@ export default function Navbar() {
                   >
                     <div className="p-2">
                       {products.map((p) => (
-                        <a
+                        <Link
                           key={p.name}
-                          href="#"
+                          to="/"
+                          onClick={closeMobile}
                           className="flex items-start gap-3 px-3 py-2.5 rounded-lg hover:bg-white/5 transition-colors"
                         >
                           <div className="w-9 h-9 rounded-lg bg-dc-500/10 flex items-center justify-center shrink-0">
@@ -81,7 +85,7 @@ export default function Navbar() {
                             <div className="text-sm font-medium text-text-primary">{p.name}</div>
                             <div className="text-xs text-text-tertiary mt-0.5">{p.desc}</div>
                           </div>
-                        </a>
+                        </Link>
                       ))}
                     </div>
                   </motion.div>
@@ -89,19 +93,35 @@ export default function Navbar() {
               </AnimatePresence>
             </div>
 
-            <Link to="/download" className="px-4 py-2 text-sm text-text-secondary hover:text-text-primary transition-colors rounded-lg hover:bg-white/5">
-              Download
+            {/* Release page */}
+            <Link
+              to="/release"
+              onClick={closeMobile}
+              className="px-4 py-2 text-sm text-text-secondary hover:text-text-primary transition-colors rounded-lg hover:bg-white/5"
+            >
+              Release
             </Link>
-            <a href="#blog" className="px-4 py-2 text-sm text-text-secondary hover:text-text-primary transition-colors rounded-lg hover:bg-white/5">
+
+            {/* Blog — works from any page */}
+            <a
+              href="/#blog"
+              className="px-4 py-2 text-sm text-text-secondary hover:text-text-primary transition-colors rounded-lg hover:bg-white/5"
+            >
               Blog
             </a>
-            <a href="#feedback" className="px-4 py-2 text-sm text-text-secondary hover:text-text-primary transition-colors rounded-lg hover:bg-white/5">
+
+            {/* Feedback — works from any page */}
+            <a
+              href="/#feedback"
+              className="px-4 py-2 text-sm text-text-secondary hover:text-text-primary transition-colors rounded-lg hover:bg-white/5"
+            >
               Feedback
             </a>
 
             <div className="ml-4 pl-4 border-l border-border-subtle">
               <Link
-                to="/download"
+                to="/release"
+                onClick={closeMobile}
                 className="inline-flex items-center gap-2 bg-dc-600 hover:bg-dc-500 text-white px-5 py-2 rounded-lg text-sm font-medium transition-all duration-200 shadow-lg shadow-dc-600/20 hover:shadow-dc-500/30"
               >
                 <Download size={15} />
@@ -114,6 +134,7 @@ export default function Navbar() {
           <button
             onClick={() => setMobileOpen(!mobileOpen)}
             className="md:hidden p-2 rounded-lg text-text-secondary hover:text-text-primary hover:bg-white/5 transition-colors"
+            aria-label={mobileOpen ? 'Close navigation menu' : 'Open navigation menu'}
           >
             {mobileOpen ? <X size={22} /> : <Menu size={22} />}
           </button>
@@ -132,28 +153,42 @@ export default function Navbar() {
           >
             <div className="px-4 py-4 space-y-1">
               {products.map((p) => (
-                <a
+                <Link
                   key={p.name}
-                  href="#"
+                  to="/"
+                  onClick={closeMobile}
                   className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-text-secondary hover:text-text-primary hover:bg-white/5 transition-colors"
                 >
                   <p.icon size={16} className="text-dc-400" />
                   {p.name}
-                </a>
+                </Link>
               ))}
               <hr className="border-border-subtle my-2" />
-              <Link to="/download" className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-text-secondary hover:text-text-primary hover:bg-white/5 transition-colors">
-                <Download size={16} /> Download
+              <Link
+                to="/release"
+                onClick={closeMobile}
+                className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-text-secondary hover:text-text-primary hover:bg-white/5 transition-colors"
+              >
+                <Download size={16} /> Release
               </Link>
-              <a href="#blog" className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-text-secondary hover:text-text-primary hover:bg-white/5 transition-colors">
+              <a
+                href="/#blog"
+                className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-text-secondary hover:text-text-primary hover:bg-white/5 transition-colors"
+                onClick={closeMobile}
+              >
                 <Newspaper size={16} /> Blog
               </a>
-              <a href="#feedback" className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-text-secondary hover:text-text-primary hover:bg-white/5 transition-colors">
+              <a
+                href="/#feedback"
+                className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-text-secondary hover:text-text-primary hover:bg-white/5 transition-colors"
+                onClick={closeMobile}
+              >
                 <MessageSquare size={16} /> Feedback
               </a>
               <div className="pt-3">
                 <Link
-                  to="/download"
+                  to="/release"
+                  onClick={closeMobile}
                   className="flex items-center justify-center gap-2 bg-dc-600 hover:bg-dc-500 text-white px-5 py-2.5 rounded-lg text-sm font-medium transition-all w-full"
                 >
                   <Download size={15} />

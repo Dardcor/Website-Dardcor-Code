@@ -7,7 +7,7 @@ import BuiltForDevs from './components/sections/BuiltForDevs';
 import Showcase from './components/sections/Showcase';
 import Blog from './components/sections/Blog';
 import FeedbackForm from './components/forms/FeedbackForm';
-import DownloadPage from './pages/DownloadPage';
+import ReleasePage from './pages/ReleasePage';
 
 function HomePage() {
   return (
@@ -33,7 +33,7 @@ function App() {
 
       <Routes>
         <Route path="/" element={<HomePage />} />
-        <Route path="/download" element={<DownloadPage />} />
+        <Route path="/release" element={<ReleasePage />} />
       </Routes>
     </div>
   );

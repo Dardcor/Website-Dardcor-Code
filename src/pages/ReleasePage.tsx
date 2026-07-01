@@ -79,6 +79,12 @@ function parseReleaseBody(body: string): string[] {
 
 export default function DownloadPage() {
   const [activeTab, setActiveTab] = useState<OSTab>('macOS');
+
+  // Per-page SEO: update document title
+  useEffect(() => {
+    document.title = 'Download Dardcor Code — Latest Release for macOS, Windows & Linux';
+    return () => { document.title = 'Dardcor Code — Agent-First IDE for Autonomous Development'; };
+  }, []);
   const [release, setRelease] = useState<GitHubRelease | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -116,11 +122,24 @@ export default function DownloadPage() {
 
   return (
     <>
+    <main>
     <section className="relative min-h-screen pt-24 pb-16 px-4 sm:px-6 overflow-hidden">
       {/* Background */}
       <div className="absolute inset-0 gradient-bg pointer-events-none" />
       <div className="absolute top-20 left-1/4 w-[500px] h-[500px] bg-dc-500/8 rounded-full blur-[120px] pointer-events-none" />
       <div className="absolute bottom-20 right-1/4 w-[400px] h-[400px] bg-dc-600/5 rounded-full blur-[100px] pointer-events-none" />
+
+      {/* BreadcrumbList JSON-LD */}
+      <script type="application/ld+json">
+        {JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://dardcor-code.web.id/" },
+            { "@type": "ListItem", "position": 2, "name": "Download Dardcor Code", "item": "https://dardcor-code.web.id/release" }
+          ]
+        })}
+      </script>
 
       <div className="relative z-10 max-w-5xl mx-auto">
         {/* Header */}
@@ -406,6 +425,7 @@ export default function DownloadPage() {
         </motion.div>
       </div>
     </section>
+    </main>
       <Footer />
     </>
   );

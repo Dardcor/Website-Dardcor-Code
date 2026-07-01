@@ -7,28 +7,28 @@ const posts = [
     excerpt: 'The first agent-first IDE is now available. Meet the next generation of autonomous development.',
     date: 'June 15, 2026',
     category: 'Product',
-    href: '#',
+    href: 'https://github.com/Dardcor/Dardcor-Code/releases',
   },
   {
     title: 'Building a REST API with Dardcor Code',
     excerpt: 'Watch an agent autonomously plan, build, and deploy a complete REST API with authentication in minutes.',
     date: 'June 10, 2026',
     category: 'Tutorial',
-    href: '#',
+    href: 'https://github.com/Dardcor/Dardcor-Code',
   },
   {
     title: 'Dardcor Code Is Now Open Source',
     excerpt: 'We are open-sourcing the core platform. Join the community and help shape the future of agentic development.',
     date: 'June 5, 2026',
     category: 'Announcement',
-    href: '#',
+    href: 'https://github.com/Dardcor/Dardcor-Code',
   },
   {
     title: 'How We Built Dardcor Code',
     excerpt: 'Behind the scenes: architecture decisions, challenges, and lessons learned building an agent-first platform.',
     date: 'May 28, 2026',
     category: 'Engineering',
-    href: '#',
+    href: 'https://github.com/Dardcor/Dardcor-Code',
   },
 ];
 
@@ -54,7 +54,9 @@ export default function Blog() {
             <p className="mt-2 text-text-secondary">News, tutorials, and insights from the Dardcor team.</p>
           </div>
           <a
-            href="#"
+            href="https://github.com/Dardcor/Dardcor-Code/releases"
+            target="_blank"
+            rel="noreferrer"
             className="hidden sm:inline-flex items-center gap-1.5 text-sm text-dc-400 hover:text-dc-300 transition-colors"
           >
             View all posts <ArrowRight size={14} />
@@ -67,6 +69,8 @@ export default function Blog() {
             <motion.a
               key={post.title}
               href={post.href}
+              target="_blank"
+              rel="noreferrer"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: '-80px' }}
@@ -91,7 +95,7 @@ export default function Blog() {
               {/* Date */}
               <div className="flex items-center gap-1.5 text-xs text-text-tertiary">
                 <Calendar size={12} />
-                {post.date}
+                <time dateTime={post.date}>{post.date}</time>
               </div>
             </motion.a>
           ))}
@@ -105,7 +109,9 @@ export default function Blog() {
           className="sm:hidden mt-8 text-center"
         >
           <a
-            href="#"
+            href="https://github.com/Dardcor/Dardcor-Code/releases"
+            target="_blank"
+            rel="noreferrer"
             className="inline-flex items-center gap-1.5 text-sm text-dc-400 hover:text-dc-300 transition-colors"
           >
             View all posts <ArrowRight size={14} />

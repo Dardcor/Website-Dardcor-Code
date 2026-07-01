@@ -82,7 +82,7 @@ export default function Hero() {
           className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4"
         >
           <Link
-            to="/download"
+            to="/release"
             className="inline-flex items-center gap-2.5 bg-dc-600 hover:bg-dc-500 text-white px-7 py-3.5 rounded-xl text-base font-medium transition-all duration-200 shadow-xl shadow-dc-600/25 hover:shadow-dc-500/40 hover:scale-[1.02] active:scale-[0.98]"
           >
             Download Free

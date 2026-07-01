@@ -1,0 +1,6 @@
+# Allow all crawlers full access
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://dardcor-code.web.id/sitemap.xml

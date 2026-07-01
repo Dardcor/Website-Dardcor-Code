@@ -72,6 +72,7 @@ export default function Showcase() {
               <button
                 onClick={() => setFullscreen(!fullscreen)}
                 className="ml-2 p-1 rounded hover:bg-white/10 transition-colors"
+                aria-label={fullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
               >
                 <Maximize2 size={14} className="text-text-tertiary" />
               </button>
@@ -81,9 +82,11 @@ export default function Showcase() {
             <div className="relative bg-surface-elevated">
               <img
                 src="/showcase.png"
-                alt="Dardcor Code Editor Showcase"
+                alt="Dardcor Code Editor Showcase — autonomous agent IDE interface"
                 className={`w-full ${fullscreen ? 'object-contain max-h-[80vh]' : 'object-cover'} transition-all duration-500`}
                 style={{ minHeight: '300px', background: 'linear-gradient(135deg, #0d0d24, #08081a)' }}
+                loading="lazy"
+                decoding="async"
               />
 
               {/* Fallback overlay if image fails to load */}
@@ -119,14 +122,18 @@ export default function Showcase() {
                 <button
                   onClick={prev}
                   className="p-1.5 rounded-lg hover:bg-white/10 transition-colors text-text-tertiary hover:text-text-primary"
+                  aria-label="Previous slide"
                 >
                   <ChevronLeft size={16} />
                 </button>
-                <div className="flex gap-1.5">
+                <div className="flex gap-1.5" role="tablist" aria-label="Slide controls">
                   {slides.map((_, i) => (
                     <button
                       key={i}
                       onClick={() => setActiveIndex(i)}
+                      role="tab"
+                      aria-selected={i === activeIndex}
+                      aria-label={`Slide ${i + 1}`}
                       className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${
                         i === activeIndex ? 'bg-dc-400 w-4' : 'bg-text-tertiary/30'
                       }`}
@@ -136,6 +143,7 @@ export default function Showcase() {
                 <button
                   onClick={next}
                   className="p-1.5 rounded-lg hover:bg-white/10 transition-colors text-text-tertiary hover:text-text-primary"
+                  aria-label="Next slide"
                 >
                   <ChevronRight size={16} />
                 </button>

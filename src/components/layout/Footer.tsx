@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import { Mail } from 'lucide-react';
 
 const GitHubIcon = ({ size }: { size: number }) => (
@@ -18,22 +19,51 @@ const YoutubeIcon = ({ size }: { size: number }) => (
   </svg>
 );
 
-const footerLinks = [
+interface FooterLink {
+  name: string;
+  href: string;
+  external?: boolean;
+}
+
+const footerLinks: { title: string; links: FooterLink[] }[] = [
   {
     title: 'Product',
-    links: ['Dardcor Code', 'Dardcor CLI', 'Dardcor SDK', 'Dardcor Manager', 'Changelog'],
+    links: [
+      { name: 'Dardcor Code', href: '/' },
+      { name: 'Dardcor CLI', href: '/' },
+      { name: 'Dardcor SDK', href: '/' },
+      { name: 'Dardcor Manager', href: '/' },
+      { name: 'Changelog', href: 'https://github.com/Dardcor/Dardcor-Code/releases', external: true },
+    ],
   },
   {
     title: 'Resources',
-    links: ['Documentation', 'API Reference', 'Tutorials', 'FAQ', 'Status'],
+    links: [
+      { name: 'Documentation', href: '/', external: false },
+      { name: 'API Reference', href: '/', external: false },
+      { name: 'Tutorials', href: '/', external: false },
+      { name: 'FAQ', href: '/', external: false },
+      { name: 'Status', href: '/', external: false },
+    ],
   },
   {
     title: 'Company',
-    links: ['About', 'Blog', 'Careers', 'Press Kit', 'Contact'],
+    links: [
+      { name: 'About', href: '/', external: false },
+      { name: 'Blog', href: '/#blog', external: false },
+      { name: 'Careers', href: '/', external: false },
+      { name: 'Press Kit', href: '/', external: false },
+      { name: 'Contact', href: 'mailto:hello@dardcor.dev', external: true },
+    ],
   },
   {
     title: 'Legal',
-    links: ['Privacy Policy', 'Terms of Service', 'Cookie Policy', 'Security'],
+    links: [
+      { name: 'Privacy Policy', href: '/', external: false },
+      { name: 'Terms of Service', href: '/', external: false },
+      { name: 'Cookie Policy', href: '/', external: false },
+      { name: 'Security', href: '/', external: false },
+    ],
   },
 ];
 
@@ -45,7 +75,7 @@ export default function Footer() {
         <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-8 mb-12">
           {/* Brand Column */}
           <div className="lg:col-span-1">
-            <a href="#" className="flex items-center gap-2.5 mb-4">
+            <Link to="/" className="flex items-center gap-2.5 mb-4">
               <img
                 src="/dardcor.png"
                 alt="Dardcor"
@@ -54,7 +84,7 @@ export default function Footer() {
               <span className="font-display font-semibold text-text-primary text-base">
                 Dardcor <span className="text-dc-400">Code</span>
               </span>
-            </a>
+            </Link>
             <p className="text-sm text-text-tertiary leading-relaxed max-w-xs">
               The agent-first development platform. Build the new way.
             </p>
@@ -64,6 +94,7 @@ export default function Footer() {
                 target="_blank"
                 rel="noreferrer"
                 className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center text-text-tertiary hover:text-text-primary transition-all"
+                aria-label="Dardcor on GitHub"
               >
                 <GitHubIcon size={16} />
               </a>
@@ -72,6 +103,7 @@ export default function Footer() {
                 target="_blank"
                 rel="noreferrer"
                 className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center text-text-tertiary hover:text-text-primary transition-all"
+                aria-label="Dardcor on X (Twitter)"
               >
                 <TwitterIcon size={16} />
               </a>
@@ -80,12 +112,14 @@ export default function Footer() {
                 target="_blank"
                 rel="noreferrer"
                 className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center text-text-tertiary hover:text-text-primary transition-all"
+                aria-label="Dardcor on YouTube"
               >
                 <YoutubeIcon size={16} />
               </a>
               <a
                 href="mailto:hello@dardcor.dev"
                 className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center text-text-tertiary hover:text-text-primary transition-all"
+                aria-label="Email Dardcor"
               >
                 <Mail size={16} />
               </a>
@@ -98,13 +132,24 @@ export default function Footer() {
               <h4 className="text-sm font-semibold text-text-primary mb-3">{group.title}</h4>
               <ul className="space-y-2">
                 {group.links.map((link) => (
-                  <li key={link}>
-                    <a
-                      href="#"
-                      className="text-sm text-text-tertiary hover:text-text-secondary transition-colors"
-                    >
-                      {link}
-                    </a>
+                  <li key={link.name}>
+                    {link.external ? (
+                      <a
+                        href={link.href}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="text-sm text-text-tertiary hover:text-text-secondary transition-colors"
+                      >
+                        {link.name}
+                      </a>
+                    ) : (
+                      <Link
+                        to={link.href}
+                        className="text-sm text-text-tertiary hover:text-text-secondary transition-colors"
+                      >
+                        {link.name}
+                      </Link>
+                    )}
                   </li>
                 ))}
               </ul>
@@ -116,9 +161,9 @@ export default function Footer() {
         <div className="pt-8 border-t border-border-subtle flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-xs text-text-tertiary">
             &copy; {new Date().getFullYear()} Dardcor. All rights reserved. Built by{' '}
-            <a href="#" className="text-dc-400 hover:text-dc-300 transition-colors">
+            <Link to="/" className="text-dc-400 hover:text-dc-300 transition-colors">
               Dardcor Team
-            </a>
+            </Link>
             .
           </p>
           <p className="text-xs text-text-tertiary flex items-center gap-1">
