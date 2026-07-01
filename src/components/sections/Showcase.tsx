@@ -1,11 +1,10 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronLeft, ChevronRight, Maximize2, Code2, Bug, Sparkles } from 'lucide-react';
+import { Maximize2, Code2, Bug, Sparkles } from 'lucide-react';
 
 const slides = [
   {
     label: 'Agent-Powered Editor',
-    desc: 'Plan, code, and ship with autonomous agents that understand your entire codebase.',
     icon: Code2,
   },
   {
@@ -24,8 +23,6 @@ export default function Showcase() {
   const [activeIndex, setActiveIndex] = useState(0);
   const [fullscreen, setFullscreen] = useState(false);
 
-  const next = () => setActiveIndex((i) => (i + 1) % slides.length);
-  const prev = () => setActiveIndex((i) => (i - 1 + slides.length) % slides.length);
   const ActiveIcon = slides[activeIndex].icon;
 
   return (
@@ -67,7 +64,7 @@ export default function Showcase() {
               <div className="terminal-dot bg-yellow-500/80" />
               <div className="terminal-dot bg-green-500/80" />
               <div className="ml-auto text-[11px] text-text-tertiary font-mono">
-                showcase — Dardcor Code editor
+showcase — Dardcor Code editor
               </div>
               <button
                 onClick={() => setFullscreen(!fullscreen)}
@@ -117,37 +114,7 @@ export default function Showcase() {
                 </AnimatePresence>
               </div>
 
-              {/* Navigation */}
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={prev}
-                  className="p-1.5 rounded-lg hover:bg-white/10 transition-colors text-text-tertiary hover:text-text-primary"
-                  aria-label="Previous slide"
-                >
-                  <ChevronLeft size={16} />
-                </button>
-                <div className="flex gap-1.5" role="tablist" aria-label="Slide controls">
-                  {slides.map((_, i) => (
-                    <button
-                      key={i}
-                      onClick={() => setActiveIndex(i)}
-                      role="tab"
-                      aria-selected={i === activeIndex}
-                      aria-label={`Slide ${i + 1}`}
-                      className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${
-                        i === activeIndex ? 'bg-dc-400 w-4' : 'bg-text-tertiary/30'
-                      }`}
-                    />
-                  ))}
-                </div>
-                <button
-                  onClick={next}
-                  className="p-1.5 rounded-lg hover:bg-white/10 transition-colors text-text-tertiary hover:text-text-primary"
-                  aria-label="Next slide"
-                >
-                  <ChevronRight size={16} />
-                </button>
-              </div>
+
             </div>
           </div>
 
