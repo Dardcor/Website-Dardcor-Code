@@ -1,34 +1,45 @@
-import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Maximize2, Code2, Bug, Sparkles } from 'lucide-react';
-
-const slides = [
-  {
-    label: 'Agent-Powered Editor',
-    icon: Code2,
-  },
-  {
-    label: 'Intelligent Debugging',
-    desc: 'Agents that diagnose, fix, and verify bugs automatically — no context switching.',
-    icon: Bug,
-  },
-  {
-    label: 'Smart Completions',
-    desc: 'Context-aware code generation that learns your patterns and project architecture.',
-    icon: Sparkles,
-  },
-];
+import { useRef, useEffect, useState } from 'react';
+import { motion, useScroll, useTransform, useSpring } from 'framer-motion';
+import { Code2 } from 'lucide-react';
 
 export default function Showcase() {
-  const [activeIndex, setActiveIndex] = useState(0);
-  const [fullscreen, setFullscreen] = useState(false);
+  const [imgLoaded, setImgLoaded] = useState(false);
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const windowRef = useRef<HTMLDivElement>(null);
 
-  const ActiveIcon = slides[activeIndex].icon;
+  // Parallax scroll effect
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ['start end', 'end start'],
+  });
+  const windowY = useTransform(scrollYProgress, [0, 0.5, 1], [80, 0, -80]);
+  const windowScale = useTransform(scrollYProgress, [0, 0.3, 0.7, 1], [0.92, 1, 1, 0.92]);
+  const windowRotateX = useTransform(scrollYProgress, [0, 0.5, 1], [3, 0, -3]);
+
+  // Subtle mouse-driven Y rotation
+  const springConfig = { damping: 30, stiffness: 150 };
+  const mouseRotateY = useSpring(0, springConfig);
+
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      if (!windowRef.current) return;
+      const rect = windowRef.current.getBoundingClientRect();
+      const centerX = rect.left + rect.width / 2;
+      const rotateYValue = ((e.clientX - centerX) / (rect.width / 2)) * 1.5;
+      mouseRotateY.set(rotateYValue);
+    };
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, [mouseRotateY]);
 
   return (
-    <section id="showcase" className="relative py-24 sm:py-32 px-4 sm:px-6 overflow-hidden">
+    <section ref={sectionRef} id="showcase" className="relative py-24 sm:py-32 px-4 sm:px-6 overflow-hidden">
       {/* Background */}
       <div className="absolute inset-0 bg-gradient-to-b from-surface-base via-dc-500/[0.02] to-surface-base pointer-events-none" />
+
+      {/* Glowing orbs */}
+      <div className="absolute top-1/3 left-1/4 w-96 h-96 bg-dc-500/8 rounded-full blur-[150px] pointer-events-none" />
+      <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-cyan-accent/5 rounded-full blur-[120px] pointer-events-none" />
 
       <div className="relative z-10 max-w-6xl mx-auto">
         {/* Section Header */}
@@ -37,100 +48,67 @@ export default function Showcase() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: '-80px' }}
           transition={{ duration: 0.5 }}
-          className="text-center mb-16"
+          className="text-center mb-10"
         >
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-display font-bold text-text-primary tracking-tight">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-serif font-bold text-text-primary tracking-tight">
             See it in{' '}
             <span className="text-gradient">action</span>
           </h2>
-          <p className="mt-4 text-lg text-text-secondary max-w-2xl mx-auto">
+          <p className="mt-4 text-base sm:text-lg text-text-secondary max-w-2xl mx-auto">
             Watch Dardcor Code autonomously plan, build, and verify production-grade applications.
           </p>
         </motion.div>
 
         {/* Showcase Window */}
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: '-80px' }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          className="relative group"
+          ref={windowRef}
+          style={{
+            y: windowY,
+            scale: windowScale,
+            rotateX: windowRotateX,
+            rotateY: mouseRotateY,
+            transformPerspective: 1200,
+          }}
+          className="w-full glass-strong rounded-2xl overflow-hidden border border-border-default shadow-2xl shadow-black/40"
         >
-          {/* Main Showcase Image */}
-          <div className="glass-strong rounded-2xl overflow-hidden border border-border-default shadow-2xl shadow-black/20">
-            {/* Window Header */}
-            <div className="terminal-header">
-              <div className="terminal-dot bg-red-500/80" />
-              <div className="terminal-dot bg-yellow-500/80" />
-              <div className="terminal-dot bg-green-500/80" />
-              <div className="ml-auto text-[11px] text-text-tertiary font-mono">
-showcase — Dardcor Code editor
-              </div>
-              <button
-                onClick={() => setFullscreen(!fullscreen)}
-                className="ml-2 p-1 rounded hover:bg-white/10 transition-colors"
-                aria-label={fullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
-              >
-                <Maximize2 size={14} className="text-text-tertiary" />
-              </button>
+          {/* Window Header */}
+          <div className="flex items-center px-4 py-3 bg-black/40 backdrop-blur-md border-b border-border-subtle">
+            <div className="flex gap-2">
+              <div className="w-3 h-3 rounded-full bg-red-500/80" />
+              <div className="w-3 h-3 rounded-full bg-yellow-500/80" />
+              <div className="w-3 h-3 rounded-full bg-green-500/80" />
             </div>
-
-            {/* Image Container */}
-            <div className="relative bg-surface-elevated">
-              <img
-                src="/showcase.png"
-                alt="Dardcor Code Editor Showcase — autonomous agent IDE interface"
-                className={`w-full ${fullscreen ? 'object-contain max-h-[80vh]' : 'object-cover'} transition-all duration-500`}
-                style={{ minHeight: '300px', background: 'linear-gradient(135deg, #0d0d24, #08081a)' }}
-                loading="lazy"
-                decoding="async"
-              />
-
-              {/* Fallback overlay if image fails to load */}
-              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                <div className="text-center opacity-10">
-                  <Code2 size={80} className="mx-auto text-dc-400" />
-                </div>
-              </div>
-            </div>
-
-            {/* Bottom Info Bar */}
-            <div className="flex items-center justify-between px-5 py-3 border-t border-border-subtle bg-surface-elevated/50">
-              <div className="flex items-center gap-3">
-                <AnimatePresence mode="wait">
-                  <motion.div
-                    key={activeIndex}
-                    initial={{ opacity: 0, x: -10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: 10 }}
-                    transition={{ duration: 0.2 }}
-                    className="flex items-center gap-2"
-                  >
-                    <ActiveIcon size={16} className="text-dc-400" />
-                    <span className="text-sm font-medium text-text-primary">
-                      {slides[activeIndex].label}
-                    </span>
-                  </motion.div>
-                </AnimatePresence>
-              </div>
-
-
+            <div className="mx-auto text-[11px] text-text-tertiary font-mono tracking-wider">
+              showcase — Dardcor Code editor
             </div>
           </div>
 
-          {/* Slide Description */}
-          <AnimatePresence mode="wait">
-            <motion.p
-              key={activeIndex}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.3 }}
-              className="mt-6 text-center text-text-secondary max-w-xl mx-auto text-sm"
-            >
-              {slides[activeIndex].desc}
-            </motion.p>
-          </AnimatePresence>
+          {/* Image — text-[0] kills ALL whitespace below inline img */}
+          <div
+            className="relative text-[0]"
+            style={{ background: 'linear-gradient(135deg, #0a0a1a 0%, #06060e 100%)' }}
+          >
+            {/* Inner edge vignette */}
+            <div className="absolute inset-0 shadow-[inset_0_0_80px_rgba(0,0,0,0.55)] pointer-events-none z-10" />
+
+            <img
+              src="/showcase.png"
+              alt="Dardcor Code Editor Showcase"
+              className={`w-full h-auto align-middle transition-opacity duration-700 ${
+                imgLoaded ? 'opacity-100' : 'opacity-0'
+              }`}
+              onLoad={() => setImgLoaded(true)}
+              loading="lazy"
+              decoding="async"
+            />
+
+            {!imgLoaded && (
+              <div className="absolute inset-0 flex items-center justify-center bg-[#08081a]">
+                <div className="animate-shimmer w-full h-full absolute inset-0" />
+                <Code2 size={40} className="text-dc-500/20 relative z-10" />
+              </div>
+            )}
+          </div>
         </motion.div>
       </div>
     </section>

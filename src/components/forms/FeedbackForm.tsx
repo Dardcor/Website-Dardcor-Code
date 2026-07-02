@@ -1,6 +1,6 @@
 import { useState, type FormEvent } from 'react';
 import { motion } from 'framer-motion';
-import { Bug, Lightbulb, Send, CheckCircle, AlertCircle, Loader2 } from 'lucide-react';
+import { Bug, Lightbulb, Send, CheckCircle, AlertCircle, Loader2, Sparkles } from 'lucide-react';
 
 type FeedbackType = 'bug' | 'feature';
 
@@ -76,11 +76,11 @@ export default function FeedbackForm() {
           transition={{ duration: 0.5 }}
           className="text-center mb-12"
         >
-          <h2 className="text-3xl sm:text-4xl font-display font-bold text-text-primary tracking-tight">
+          <h2 className="text-3xl sm:text-4xl font-serif font-bold text-text-primary tracking-tight">
             Help us{' '}
             <span className="text-gradient">improve</span>
           </h2>
-          <p className="mt-3 text-text-secondary max-w-lg mx-auto">
+          <p className="mt-3 text-text-secondary max-w-lg mx-auto font-sans">
             Found a bug or have an idea? We would love to hear from you.
           </p>
         </motion.div>
@@ -91,22 +91,25 @@ export default function FeedbackForm() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: '-80px' }}
           transition={{ duration: 0.5, delay: 0.1 }}
-          className="glass-strong rounded-2xl border border-border-default p-6 sm:p-8"
+          className="relative glass-strong rounded-2xl border border-border-default p-6 sm:p-8 overflow-hidden"
         >
+          {/* Decorative floating element */}
+          <Sparkles className="absolute -top-6 -right-6 w-32 h-32 text-dc-500 opacity-10 animate-float-slow pointer-events-none" />
+          
           {submitted ? (
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
-              className="text-center py-12"
+              className="text-center py-12 relative z-10"
             >
               <CheckCircle size={48} className="mx-auto text-green-400 mb-4" />
-              <h3 className="text-xl font-semibold text-text-primary mb-2">Thank you!</h3>
-              <p className="text-text-secondary text-sm">
+              <h3 className="text-xl font-semibold text-text-primary mb-2 font-serif">Thank you!</h3>
+              <p className="text-text-secondary text-sm font-sans">
                 Your feedback has been submitted successfully. We will review it shortly.
               </p>
             </motion.div>
           ) : (
-            <form onSubmit={handleSubmit} className="space-y-5">
+            <form onSubmit={handleSubmit} className="space-y-5 relative z-10 font-sans">
               {/* Feedback Type Toggle */}
               <div className="flex gap-3">
                 <button
@@ -115,7 +118,7 @@ export default function FeedbackForm() {
                   className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${
                     form.type === 'bug'
                       ? 'bg-red-500/15 text-red-400 border border-red-500/30'
-                      : 'bg-white/5 text-text-tertiary border border-transparent hover:bg-white/10'
+                      : 'bg-white/5 text-text-tertiary border border-border-subtle hover:bg-white/10'
                   }`}
                 >
                   <Bug size={16} />
@@ -127,7 +130,7 @@ export default function FeedbackForm() {
                   className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${
                     form.type === 'feature'
                       ? 'bg-dc-500/15 text-dc-400 border border-dc-500/30'
-                      : 'bg-white/5 text-text-tertiary border border-transparent hover:bg-white/10'
+                      : 'bg-white/5 text-text-tertiary border border-border-subtle hover:bg-white/10'
                   }`}
                 >
                   <Lightbulb size={16} />
@@ -145,7 +148,7 @@ export default function FeedbackForm() {
                   value={form.title}
                   onChange={(e) => updateField('title', e.target.value)}
                   placeholder={form.type === 'bug' ? 'Brief description of the bug...' : 'Brief description of your idea...'}
-                  className="w-full px-4 py-2.5 rounded-xl bg-white/5 border border-border-subtle text-text-primary placeholder:text-text-tertiary/50 focus:outline-none focus:border-dc-500/50 focus:ring-1 focus:ring-dc-500/20 transition-all text-sm"
+                  className="w-full bg-white/5 border border-border-subtle text-text-primary placeholder:text-text-tertiary/50 focus:border-dc-500/50 focus:ring-1 focus:ring-dc-500/20 rounded-xl px-4 py-2.5 focus:outline-none transition-all text-sm"
                 />
               </div>
 
@@ -163,7 +166,7 @@ export default function FeedbackForm() {
                       ? 'Steps to reproduce, expected behavior, actual behavior...'
                       : 'Describe your feature idea in detail...'
                   }
-                  className="w-full px-4 py-2.5 rounded-xl bg-white/5 border border-border-subtle text-text-primary placeholder:text-text-tertiary/50 focus:outline-none focus:border-dc-500/50 focus:ring-1 focus:ring-dc-500/20 transition-all text-sm resize-y"
+                  className="w-full bg-white/5 border border-border-subtle text-text-primary placeholder:text-text-tertiary/50 focus:border-dc-500/50 focus:ring-1 focus:ring-dc-500/20 rounded-xl px-4 py-2.5 focus:outline-none transition-all text-sm resize-y"
                 />
               </div>
 
@@ -176,7 +179,7 @@ export default function FeedbackForm() {
                     value={form.email}
                     onChange={(e) => updateField('email', e.target.value)}
                     placeholder="you@example.com"
-                    className="w-full px-4 py-2.5 rounded-xl bg-white/5 border border-border-subtle text-text-primary placeholder:text-text-tertiary/50 focus:outline-none focus:border-dc-500/50 focus:ring-1 focus:ring-dc-500/20 transition-all text-sm"
+                    className="w-full bg-white/5 border border-border-subtle text-text-primary placeholder:text-text-tertiary/50 focus:border-dc-500/50 focus:ring-1 focus:ring-dc-500/20 rounded-xl px-4 py-2.5 focus:outline-none transition-all text-sm"
                   />
                 </div>
                 <div>
@@ -184,7 +187,7 @@ export default function FeedbackForm() {
                   <select
                     value={form.os}
                     onChange={(e) => updateField('os', e.target.value)}
-                    className="w-full px-4 py-2.5 rounded-xl bg-white/5 border border-border-subtle text-text-primary focus:outline-none focus:border-dc-500/50 focus:ring-1 focus:ring-dc-500/20 transition-all text-sm appearance-none"
+                    className="w-full bg-white/5 border border-border-subtle text-text-primary focus:border-dc-500/50 focus:ring-1 focus:ring-dc-500/20 rounded-xl px-4 py-2.5 focus:outline-none transition-all text-sm appearance-none"
                   >
                     <option value="" className="bg-surface-card">Select OS</option>
                     <option value="macOS" className="bg-surface-card">macOS</option>
@@ -200,7 +203,7 @@ export default function FeedbackForm() {
                     value={form.version}
                     onChange={(e) => updateField('version', e.target.value)}
                     placeholder="e.g. 1.0.0"
-                    className="w-full px-4 py-2.5 rounded-xl bg-white/5 border border-border-subtle text-text-primary placeholder:text-text-tertiary/50 focus:outline-none focus:border-dc-500/50 focus:ring-1 focus:ring-dc-500/20 transition-all text-sm"
+                    className="w-full bg-white/5 border border-border-subtle text-text-primary placeholder:text-text-tertiary/50 focus:border-dc-500/50 focus:ring-1 focus:ring-dc-500/20 rounded-xl px-4 py-2.5 focus:outline-none transition-all text-sm"
                   />
                 </div>
               </div>
@@ -221,7 +224,7 @@ export default function FeedbackForm() {
               <button
                 type="submit"
                 disabled={sending}
-                className="w-full flex items-center justify-center gap-2 bg-dc-600 hover:bg-dc-500 disabled:bg-dc-600/50 text-white px-6 py-3 rounded-xl text-sm font-medium transition-all duration-200 shadow-lg shadow-dc-600/20"
+                className="w-full flex items-center justify-center gap-2 bg-dc-600 hover:bg-dc-500 disabled:bg-dc-600/50 text-white rounded-xl px-6 py-3 text-sm font-medium transition-all duration-200 hover:scale-[1.01] active:scale-[0.99] shadow-lg shadow-dc-600/20"
               >
                 {sending ? (
                   <>

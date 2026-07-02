@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X, ChevronDown, Download, MessageSquare, Newspaper, Code2, Terminal, Package, Columns3 } from 'lucide-react';
 
@@ -14,6 +14,7 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [productsOpen, setProductsOpen] = useState(false);
+  const location = useLocation();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -21,12 +22,14 @@ export default function Navbar() {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  // Close mobile menu on navigation
   const closeMobile = () => setMobileOpen(false);
+
+  const isActive = (path: string) =>
+    location.pathname === path || (path.startsWith('/#') && location.hash === path.slice(1));
 
   return (
     <nav
-      className={`fixed top-0 inset-x-0 z-50 transition-all duration-300 ${
+      className={`fixed top-0 inset-x-0 z-50 transition-all duration-500 ${
         scrolled
           ? 'glass-strong shadow-[0_4px_30px_rgba(0,0,0,0.3)]'
           : 'bg-transparent'
@@ -34,21 +37,21 @@ export default function Navbar() {
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 md:h-18">
-          {/* Logo — always to home */}
+          {/* Logo */}
           <Link to="/" onClick={closeMobile} className="flex items-center gap-3 group">
             <img
               src="/dardcor.png"
               alt="Dardcor"
               className="h-8 w-auto md:h-9 rounded-md transition-transform duration-300 group-hover:scale-105"
             />
-            <span className="font-display font-semibold text-lg text-text-primary tracking-tight">
+            <span className="font-serif font-semibold text-lg text-text-primary tracking-tight">
               Dardcor <span className="text-dc-400">Code</span>
             </span>
           </Link>
 
           {/* Desktop Nav */}
           <div className="hidden md:flex items-center gap-1">
-            {/* Products Dropdown — always to home */}
+            {/* Products Dropdown */}
             <div
               className="relative"
               onMouseEnter={() => setProductsOpen(true)}
@@ -93,36 +96,46 @@ export default function Navbar() {
               </AnimatePresence>
             </div>
 
-            {/* Release page */}
-            <Link
-              to="/release"
-              onClick={closeMobile}
-              className="px-4 py-2 text-sm text-text-secondary hover:text-text-primary transition-colors rounded-lg hover:bg-white/5"
-            >
-              Release
-            </Link>
-
-            {/* Blog — works from any page */}
-            <a
-              href="/#blog"
-              className="px-4 py-2 text-sm text-text-secondary hover:text-text-primary transition-colors rounded-lg hover:bg-white/5"
-            >
-              Blog
-            </a>
-
-            {/* Feedback — works from any page */}
-            <a
-              href="/#feedback"
-              className="px-4 py-2 text-sm text-text-secondary hover:text-text-primary transition-colors rounded-lg hover:bg-white/5"
-            >
-              Feedback
-            </a>
+            {/* Nav Links */}
+            {[
+              { label: 'Release', path: '/release' },
+              { label: 'Blog', path: '/#blog' },
+              { label: 'Feedback', path: '/#feedback' },
+            ].map((link) => (
+              link.path.startsWith('/#') ? (
+                <a
+                  key={link.label}
+                  href={link.path}
+                  onClick={closeMobile}
+                  className={`px-4 py-2 text-sm transition-colors rounded-lg hover:bg-white/5 ${
+                    isActive(link.path)
+                      ? 'text-dc-400'
+                      : 'text-text-secondary hover:text-text-primary'
+                  }`}
+                >
+                  {link.label}
+                </a>
+              ) : (
+                <Link
+                  key={link.label}
+                  to={link.path}
+                  onClick={closeMobile}
+                  className={`px-4 py-2 text-sm transition-colors rounded-lg hover:bg-white/5 ${
+                    isActive(link.path)
+                      ? 'text-dc-400'
+                      : 'text-text-secondary hover:text-text-primary'
+                  }`}
+                >
+                  {link.label}
+                </Link>
+              )
+            ))}
 
             <div className="ml-4 pl-4 border-l border-border-subtle">
               <Link
                 to="/release"
                 onClick={closeMobile}
-                className="inline-flex items-center gap-2 bg-dc-600 hover:bg-dc-500 text-white px-5 py-2 rounded-lg text-sm font-medium transition-all duration-200 shadow-lg shadow-dc-600/20 hover:shadow-dc-500/30"
+                className="inline-flex items-center gap-2 bg-dc-600 hover:bg-dc-500 text-white px-5 py-2 rounded-lg text-sm font-medium transition-all duration-200 shadow-lg shadow-dc-600/20 hover:shadow-dc-500/30 hover:scale-[1.03] active:scale-[0.97]"
               >
                 <Download size={15} />
                 Get Started

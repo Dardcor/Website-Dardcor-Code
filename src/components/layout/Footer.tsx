@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Mail } from 'lucide-react';
+import { Mail, ChevronRight } from 'lucide-react';
 
 const GitHubIcon = ({ size }: { size: number }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
@@ -69,8 +69,8 @@ const footerLinks: { title: string; links: FooterLink[] }[] = [
 
 export default function Footer() {
   return (
-    <footer className="relative border-t border-border-subtle bg-surface-elevated/30">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-12 sm:py-16">
+    <footer className="relative border-t border-border-subtle bg-surface-elevated/30 py-12 sm:py-16">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6">
         {/* Top Section */}
         <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-8 mb-12">
           {/* Brand Column */}
@@ -81,7 +81,7 @@ export default function Footer() {
                 alt="Dardcor"
                 className="h-7 w-auto rounded"
               />
-              <span className="font-display font-semibold text-text-primary text-base">
+              <span className="font-serif font-semibold text-text-primary text-base">
                 Dardcor <span className="text-dc-400">Code</span>
               </span>
             </Link>
@@ -93,7 +93,7 @@ export default function Footer() {
                 href="https://github.com/Dardcor"
                 target="_blank"
                 rel="noreferrer"
-                className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center text-text-tertiary hover:text-text-primary transition-all"
+                className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center text-text-tertiary hover:text-dc-400 hover:scale-110 transition-all duration-300"
                 aria-label="Dardcor on GitHub"
               >
                 <GitHubIcon size={16} />
@@ -102,7 +102,7 @@ export default function Footer() {
                 href="https://twitter.com/dardcor"
                 target="_blank"
                 rel="noreferrer"
-                className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center text-text-tertiary hover:text-text-primary transition-all"
+                className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center text-text-tertiary hover:text-dc-400 hover:scale-110 transition-all duration-300"
                 aria-label="Dardcor on X (Twitter)"
               >
                 <TwitterIcon size={16} />
@@ -111,14 +111,14 @@ export default function Footer() {
                 href="https://youtube.com/@dardcor"
                 target="_blank"
                 rel="noreferrer"
-                className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center text-text-tertiary hover:text-text-primary transition-all"
+                className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center text-text-tertiary hover:text-dc-400 hover:scale-110 transition-all duration-300"
                 aria-label="Dardcor on YouTube"
               >
                 <YoutubeIcon size={16} />
               </a>
               <a
                 href="mailto:hello@dardcor.dev"
-                className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center text-text-tertiary hover:text-text-primary transition-all"
+                className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center text-text-tertiary hover:text-dc-400 hover:scale-110 transition-all duration-300"
                 aria-label="Email Dardcor"
               >
                 <Mail size={16} />
@@ -126,48 +126,48 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* Links Columns */}
-          {footerLinks.map((group) => (
-            <div key={group.title}>
-              <h4 className="text-sm font-semibold text-text-primary mb-3">{group.title}</h4>
-              <ul className="space-y-2">
-                {group.links.map((link) => (
-                  <li key={link.name}>
-                    {link.external ? (
-                      <a
-                        href={link.href}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="text-sm text-text-tertiary hover:text-text-secondary transition-colors"
-                      >
-                        {link.name}
-                      </a>
-                    ) : (
-                      <Link
-                        to={link.href}
-                        className="text-sm text-text-tertiary hover:text-text-secondary transition-colors"
-                      >
-                        {link.name}
-                      </Link>
-                    )}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
+          {/* Links Columns Grid */}
+          <div className="lg:col-span-4 grid grid-cols-2 lg:grid-cols-4 gap-8">
+            {footerLinks.map((group) => (
+              <div key={group.title}>
+                <h4 className="font-serif font-semibold text-text-primary mb-4">{group.title}</h4>
+                <ul className="space-y-2.5">
+                  {group.links.map((link) => (
+                    <li key={link.name}>
+                      {link.external ? (
+                        <a
+                          href={link.href}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="group inline-flex items-center text-sm text-text-tertiary hover:text-text-secondary transition-all"
+                        >
+                          <ChevronRight className="w-3.5 h-3.5 mr-1 opacity-0 -ml-4.5 group-hover:opacity-100 group-hover:ml-0 transition-all duration-300" />
+                          <span className="transform transition-transform duration-300 group-hover:translate-x-0.5">{link.name}</span>
+                        </a>
+                      ) : (
+                        <Link
+                          to={link.href}
+                          className="group inline-flex items-center text-sm text-text-tertiary hover:text-text-secondary transition-all"
+                        >
+                          <ChevronRight className="w-3.5 h-3.5 mr-1 opacity-0 -ml-4.5 group-hover:opacity-100 group-hover:ml-0 transition-all duration-300" />
+                          <span className="transform transition-transform duration-300 group-hover:translate-x-0.5">{link.name}</span>
+                        </Link>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
         </div>
 
         {/* Bottom Bar */}
         <div className="pt-8 border-t border-border-subtle flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-xs text-text-tertiary">
-            &copy; {new Date().getFullYear()} Dardcor. All rights reserved. Built by{' '}
-            <Link to="/" className="text-dc-400 hover:text-dc-300 transition-colors">
-              Dardcor Team
-            </Link>
-            .
+            &copy; {new Date().getFullYear()} Dardcor. All rights reserved.
           </p>
           <p className="text-xs text-text-tertiary flex items-center gap-1">
-            Made with <svg width={11} height={11} viewBox="0 0 24 24" fill="currentColor" className="text-red-400 -mt-0.5 inline-block"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg> for the developer community.
+            Made with <svg width={12} height={12} viewBox="0 0 24 24" fill="currentColor" className="text-red-400 -mt-0.5"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg> for the developer community
           </p>
         </div>
       </div>
