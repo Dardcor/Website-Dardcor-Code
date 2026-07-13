@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Mail, ChevronRight } from 'lucide-react';
+import { Mail } from 'lucide-react';
 
 const GitHubIcon = ({ size }: { size: number }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
@@ -19,13 +19,7 @@ const YoutubeIcon = ({ size }: { size: number }) => (
   </svg>
 );
 
-interface FooterLink {
-  name: string;
-  href: string;
-  external?: boolean;
-}
-
-const footerLinks: { title: string; links: FooterLink[] }[] = [
+const footerLinks: { title: string; links: { name: string; href: string; external?: boolean }[] }[] = [
   {
     title: 'Product',
     links: [
@@ -33,104 +27,93 @@ const footerLinks: { title: string; links: FooterLink[] }[] = [
       { name: 'Dardcor CLI', href: '/' },
       { name: 'Dardcor SDK', href: '/' },
       { name: 'Dardcor Manager', href: '/' },
-      { name: 'Changelog', href: 'https://github.com/Dardcor/Dardcor-Code/releases', external: true },
+      { name: 'API Reference', href: '/release' },
     ],
   },
   {
     title: 'Resources',
     links: [
-      { name: 'Documentation', href: '/', external: false },
-      { name: 'API Reference', href: '/', external: false },
-      { name: 'Tutorials', href: '/', external: false },
-      { name: 'FAQ', href: '/', external: false },
-      { name: 'Status', href: '/', external: false },
+      { name: 'Documentation', href: 'https://github.com/Dardcor/Dardcor-Code', external: true },
+      { name: 'Changelog', href: 'https://github.com/Dardcor/Dardcor-Code/releases', external: true },
+      { name: 'Tutorials', href: '/#blog' },
+      { name: 'FAQ', href: '/' },
     ],
   },
   {
     title: 'Company',
     links: [
-      { name: 'About', href: '/', external: false },
-      { name: 'Blog', href: '/#blog', external: false },
-      { name: 'Careers', href: '/', external: false },
-      { name: 'Press Kit', href: '/', external: false },
+      { name: 'About', href: '/' },
+      { name: 'Blog', href: '/#blog' },
       { name: 'Contact', href: 'mailto:hello@dardcor.dev', external: true },
     ],
   },
   {
     title: 'Legal',
     links: [
-      { name: 'Privacy Policy', href: '/', external: false },
-      { name: 'Terms of Service', href: '/', external: false },
-      { name: 'Cookie Policy', href: '/', external: false },
-      { name: 'Security', href: '/', external: false },
+      { name: 'Privacy Policy', href: '/' },
+      { name: 'Terms of Service', href: '/' },
+      { name: 'Security', href: '/' },
     ],
   },
 ];
 
 export default function Footer() {
   return (
-    <footer className="relative border-t border-border-subtle bg-surface-elevated/30 py-12 sm:py-16">
+    <footer className="relative border-t border-border-default bg-surface-elevated py-12 sm:py-16">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
-        {/* Top Section */}
-        <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-8 mb-12">
-          {/* Brand Column */}
+        <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-8 mb-10">
           <div className="lg:col-span-1">
             <Link to="/" className="flex items-center gap-2.5 mb-4">
-              <img
-                src="/dardcor.png"
-                alt="Dardcor"
-                className="h-7 w-auto rounded"
-              />
-              <span className="font-serif font-semibold text-text-primary text-base">
-                Dardcor <span className="text-dc-400">Code</span>
+              <img src="/dardcor.png" alt="Dardcor" className="h-6 w-auto rounded" />
+              <span className="font-display font-semibold text-text-primary text-sm">
+                Dardcor <span className="text-dc-600">Code</span>
               </span>
             </Link>
             <p className="text-sm text-text-tertiary leading-relaxed max-w-xs">
               The agent-first development platform. Build the new way.
             </p>
-            <div className="flex items-center gap-3 mt-5">
+            <div className="flex items-center gap-2.5 mt-5">
               <a
                 href="https://github.com/Dardcor"
                 target="_blank"
                 rel="noreferrer"
-                className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center text-text-tertiary hover:text-dc-400 hover:scale-110 transition-all duration-300"
+                className="w-7 h-7 rounded-lg bg-dc-50/50 hover:bg-dc-100 flex items-center justify-center text-text-tertiary hover:text-dc-600 transition-all duration-300"
                 aria-label="Dardcor on GitHub"
               >
-                <GitHubIcon size={16} />
+                <GitHubIcon size={14} />
               </a>
               <a
                 href="https://twitter.com/dardcor"
                 target="_blank"
                 rel="noreferrer"
-                className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center text-text-tertiary hover:text-dc-400 hover:scale-110 transition-all duration-300"
+                className="w-7 h-7 rounded-lg bg-dc-50/50 hover:bg-dc-100 flex items-center justify-center text-text-tertiary hover:text-dc-600 transition-all duration-300"
                 aria-label="Dardcor on X (Twitter)"
               >
-                <TwitterIcon size={16} />
+                <TwitterIcon size={14} />
               </a>
               <a
                 href="https://youtube.com/@dardcor"
                 target="_blank"
                 rel="noreferrer"
-                className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center text-text-tertiary hover:text-dc-400 hover:scale-110 transition-all duration-300"
+                className="w-7 h-7 rounded-lg bg-dc-50/50 hover:bg-dc-100 flex items-center justify-center text-text-tertiary hover:text-dc-600 transition-all duration-300"
                 aria-label="Dardcor on YouTube"
               >
-                <YoutubeIcon size={16} />
+                <YoutubeIcon size={14} />
               </a>
               <a
                 href="mailto:hello@dardcor.dev"
-                className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center text-text-tertiary hover:text-dc-400 hover:scale-110 transition-all duration-300"
+                className="w-7 h-7 rounded-lg bg-dc-50/50 hover:bg-dc-100 flex items-center justify-center text-text-tertiary hover:text-dc-600 transition-all duration-300"
                 aria-label="Email Dardcor"
               >
-                <Mail size={16} />
+                <Mail size={14} />
               </a>
             </div>
           </div>
 
-          {/* Links Columns Grid */}
           <div className="lg:col-span-4 grid grid-cols-2 lg:grid-cols-4 gap-8">
             {footerLinks.map((group) => (
               <div key={group.title}>
-                <h4 className="font-serif font-semibold text-text-primary mb-4">{group.title}</h4>
+                <h4 className="font-display font-semibold text-sm text-text-primary mb-4">{group.title}</h4>
                 <ul className="space-y-2.5">
                   {group.links.map((link) => (
                     <li key={link.name}>
@@ -139,18 +122,16 @@ export default function Footer() {
                           href={link.href}
                           target="_blank"
                           rel="noreferrer"
-                          className="group inline-flex items-center text-sm text-text-tertiary hover:text-text-secondary transition-all"
+                          className="text-sm text-text-tertiary hover:text-text-primary transition-colors"
                         >
-                          <ChevronRight className="w-3.5 h-3.5 mr-1 opacity-0 -ml-4.5 group-hover:opacity-100 group-hover:ml-0 transition-all duration-300" />
-                          <span className="transform transition-transform duration-300 group-hover:translate-x-0.5">{link.name}</span>
+                          {link.name}
                         </a>
                       ) : (
                         <Link
                           to={link.href}
-                          className="group inline-flex items-center text-sm text-text-tertiary hover:text-text-secondary transition-all"
+                          className="text-sm text-text-tertiary hover:text-text-primary transition-colors"
                         >
-                          <ChevronRight className="w-3.5 h-3.5 mr-1 opacity-0 -ml-4.5 group-hover:opacity-100 group-hover:ml-0 transition-all duration-300" />
-                          <span className="transform transition-transform duration-300 group-hover:translate-x-0.5">{link.name}</span>
+                          {link.name}
                         </Link>
                       )}
                     </li>
@@ -161,13 +142,12 @@ export default function Footer() {
           </div>
         </div>
 
-        {/* Bottom Bar */}
-        <div className="pt-8 border-t border-border-subtle flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="pt-6 border-t border-border-default flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-xs text-text-tertiary">
             &copy; {new Date().getFullYear()} Dardcor. All rights reserved.
           </p>
-          <p className="text-xs text-text-tertiary flex items-center gap-1">
-            Made with <svg width={12} height={12} viewBox="0 0 24 24" fill="currentColor" className="text-red-400 -mt-0.5"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg> for the developer community
+          <p className="text-xs text-text-tertiary">
+            Built for the developer community
           </p>
         </div>
       </div>

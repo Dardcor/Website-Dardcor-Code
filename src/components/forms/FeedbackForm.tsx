@@ -1,6 +1,6 @@
 import { useState, type FormEvent } from 'react';
 import { motion } from 'framer-motion';
-import { Bug, Lightbulb, Send, CheckCircle, AlertCircle, Loader2, Sparkles } from 'lucide-react';
+import { Bug, Lightbulb, Send, CheckCircle, AlertCircle, Loader2 } from 'lucide-react';
 
 type FeedbackType = 'bug' | 'feature';
 
@@ -9,8 +9,6 @@ interface FormData {
   title: string;
   description: string;
   email: string;
-  os: string;
-  version: string;
 }
 
 const initialForm: FormData = {
@@ -18,8 +16,6 @@ const initialForm: FormData = {
   title: '',
   description: '',
   email: '',
-  os: '',
-  version: '',
 };
 
 export default function FeedbackForm() {
@@ -32,9 +28,9 @@ export default function FeedbackForm() {
     setForm((prev) => ({ ...prev, [key]: value }));
 
   const validate = (): string | null => {
-    if (!form.title.trim()) return 'Please enter a title.';
-    if (!form.description.trim()) return 'Please describe your feedback.';
-    if (form.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) return 'Please enter a valid email.';
+    if (!form.title.trim()) return 'Enter a title for your feedback.';
+    if (!form.description.trim()) return 'Describe your feedback in detail.';
+    if (form.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) return 'Enter a valid email address.';
     return null;
   };
 
@@ -47,13 +43,7 @@ export default function FeedbackForm() {
     }
     setError('');
     setSending(true);
-
-    // Simulate API call
-    await new Promise((r) => setTimeout(r, 1500));
-
-    // In production, send to your backend:
-    // await fetch('/api/feedback', { method: 'POST', body: JSON.stringify(form) })
-
+    await new Promise((r) => setTimeout(r, 1200));
     setSending(false);
     setSubmitted(true);
     setForm(initialForm);
@@ -62,66 +52,55 @@ export default function FeedbackForm() {
 
   return (
     <section id="feedback" className="relative py-24 sm:py-32 px-4 sm:px-6 overflow-hidden">
-      {/* Background */}
-      <div className="absolute inset-0">
-        <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-dc-500/5 rounded-full blur-[120px]" />
-      </div>
-
       <div className="relative z-10 max-w-3xl mx-auto">
-        {/* Section Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: '-80px' }}
           transition={{ duration: 0.5 }}
-          className="text-center mb-12"
+          className="text-center mb-10"
         >
-          <h2 className="text-3xl sm:text-4xl font-serif font-bold text-text-primary tracking-tight">
-            Help us{' '}
-            <span className="text-gradient">improve</span>
+          <span className="section-eyebrow mb-3">Feedback</span>
+          <h2 className="text-3xl sm:text-4xl font-display font-bold text-text-primary tracking-tight">
+            Found a bug? Have an idea?
           </h2>
-          <p className="mt-3 text-text-secondary max-w-lg mx-auto font-sans">
-            Found a bug or have an idea? We would love to hear from you.
+          <p className="mt-1 text-text-secondary">
+            Your input shapes the roadmap. Tell us what works and what does not.
           </p>
         </motion.div>
 
-        {/* Form Card */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: '-80px' }}
           transition={{ duration: 0.5, delay: 0.1 }}
-          className="relative glass-strong rounded-2xl border border-border-default p-6 sm:p-8 overflow-hidden"
+          className="card-base p-6 sm:p-8 hover:border-dc-300 transition-colors duration-500"
         >
-          {/* Decorative floating element */}
-          <Sparkles className="absolute -top-6 -right-6 w-32 h-32 text-dc-500 opacity-10 animate-float-slow pointer-events-none" />
-          
           {submitted ? (
             <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
+              initial={{ opacity: 0, scale: 0.98 }}
               animate={{ opacity: 1, scale: 1 }}
-              className="text-center py-12 relative z-10"
+              className="text-center py-10"
             >
-              <CheckCircle size={48} className="mx-auto text-green-400 mb-4" />
-              <h3 className="text-xl font-semibold text-text-primary mb-2 font-serif">Thank you!</h3>
-              <p className="text-text-secondary text-sm font-sans">
-                Your feedback has been submitted successfully. We will review it shortly.
+              <CheckCircle size={44} className="mx-auto text-dc-500 mb-4" />
+              <h3 className="text-lg font-semibold text-text-primary mb-1 font-display">Thank you</h3>
+              <p className="text-sm text-text-secondary">
+                Your feedback has been submitted. We review every submission.
               </p>
             </motion.div>
           ) : (
-            <form onSubmit={handleSubmit} className="space-y-5 relative z-10 font-sans">
-              {/* Feedback Type Toggle */}
+            <form onSubmit={handleSubmit} className="space-y-5">
               <div className="flex gap-3">
                 <button
                   type="button"
                   onClick={() => updateField('type', 'bug')}
                   className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${
                     form.type === 'bug'
-                      ? 'bg-red-500/15 text-red-400 border border-red-500/30'
-                      : 'bg-white/5 text-text-tertiary border border-border-subtle hover:bg-white/10'
+                      ? 'bg-dc-50 text-dc-600 border border-dc-200'
+                      : 'bg-surface-card text-text-tertiary border border-border-default hover:bg-dc-50/50'
                   }`}
                 >
-                  <Bug size={16} />
+                  <Bug size={15} />
                   Bug Report
                 </button>
                 <button
@@ -129,33 +108,31 @@ export default function FeedbackForm() {
                   onClick={() => updateField('type', 'feature')}
                   className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${
                     form.type === 'feature'
-                      ? 'bg-dc-500/15 text-dc-400 border border-dc-500/30'
-                      : 'bg-white/5 text-text-tertiary border border-border-subtle hover:bg-white/10'
+                      ? 'bg-dc-50 text-dc-600 border border-dc-200'
+                      : 'bg-surface-card text-text-tertiary border border-border-default hover:bg-dc-50/50'
                   }`}
                 >
-                  <Lightbulb size={16} />
-                  Feature Suggestion
+                  <Lightbulb size={15} />
+                  Feature Request
                 </button>
               </div>
 
-              {/* Title */}
               <div>
                 <label className="block text-sm font-medium text-text-primary mb-1.5">
-                  Title <span className="text-red-400">*</span>
+                  Title <span className="text-text-tertiary">*</span>
                 </label>
                 <input
                   type="text"
                   value={form.title}
                   onChange={(e) => updateField('title', e.target.value)}
-                  placeholder={form.type === 'bug' ? 'Brief description of the bug...' : 'Brief description of your idea...'}
-                  className="w-full bg-white/5 border border-border-subtle text-text-primary placeholder:text-text-tertiary/50 focus:border-dc-500/50 focus:ring-1 focus:ring-dc-500/20 rounded-xl px-4 py-2.5 focus:outline-none transition-all text-sm"
+                  placeholder={form.type === 'bug' ? 'Brief summary of the issue...' : 'Brief summary of your idea...'}
+                  className="w-full bg-surface-card border border-border-default text-text-primary placeholder:text-text-tertiary/50 focus:border-dc-400 focus:ring-1 focus:ring-dc-200 rounded-xl px-4 py-2.5 focus:outline-none transition-all text-sm"
                 />
               </div>
 
-              {/* Description */}
               <div>
                 <label className="block text-sm font-medium text-text-primary mb-1.5">
-                  Description <span className="text-red-400">*</span>
+                  Description <span className="text-text-tertiary">*</span>
                 </label>
                 <textarea
                   rows={4}
@@ -164,84 +141,54 @@ export default function FeedbackForm() {
                   placeholder={
                     form.type === 'bug'
                       ? 'Steps to reproduce, expected behavior, actual behavior...'
-                      : 'Describe your feature idea in detail...'
+                      : 'Describe your idea, the problem it solves, and any implementation thoughts...'
                   }
-                  className="w-full bg-white/5 border border-border-subtle text-text-primary placeholder:text-text-tertiary/50 focus:border-dc-500/50 focus:ring-1 focus:ring-dc-500/20 rounded-xl px-4 py-2.5 focus:outline-none transition-all text-sm resize-y"
+                  className="w-full bg-surface-card border border-border-default text-text-primary placeholder:text-text-tertiary/50 focus:border-dc-400 focus:ring-1 focus:ring-dc-200 rounded-xl px-4 py-2.5 focus:outline-none transition-all text-sm resize-y"
                 />
               </div>
 
-              {/* Row: Email + OS + Version */}
-              <div className="grid sm:grid-cols-3 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-text-primary mb-1.5">Email (optional)</label>
-                  <input
-                    type="email"
-                    value={form.email}
-                    onChange={(e) => updateField('email', e.target.value)}
-                    placeholder="you@example.com"
-                    className="w-full bg-white/5 border border-border-subtle text-text-primary placeholder:text-text-tertiary/50 focus:border-dc-500/50 focus:ring-1 focus:ring-dc-500/20 rounded-xl px-4 py-2.5 focus:outline-none transition-all text-sm"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-text-primary mb-1.5">OS</label>
-                  <select
-                    value={form.os}
-                    onChange={(e) => updateField('os', e.target.value)}
-                    className="w-full bg-white/5 border border-border-subtle text-text-primary focus:border-dc-500/50 focus:ring-1 focus:ring-dc-500/20 rounded-xl px-4 py-2.5 focus:outline-none transition-all text-sm appearance-none"
-                  >
-                    <option value="" className="bg-surface-card">Select OS</option>
-                    <option value="macOS" className="bg-surface-card">macOS</option>
-                    <option value="Windows" className="bg-surface-card">Windows</option>
-                    <option value="Linux" className="bg-surface-card">Linux</option>
-                    <option value="Other" className="bg-surface-card">Other</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-text-primary mb-1.5">Version</label>
-                  <input
-                    type="text"
-                    value={form.version}
-                    onChange={(e) => updateField('version', e.target.value)}
-                    placeholder="e.g. 1.0.0"
-                    className="w-full bg-white/5 border border-border-subtle text-text-primary placeholder:text-text-tertiary/50 focus:border-dc-500/50 focus:ring-1 focus:ring-dc-500/20 rounded-xl px-4 py-2.5 focus:outline-none transition-all text-sm"
-                  />
-                </div>
+              <div>
+                <label className="block text-sm font-medium text-text-primary mb-1.5">
+                  Email <span className="text-text-tertiary">(optional)</span>
+                </label>
+                <input
+                  type="email"
+                  value={form.email}
+                  onChange={(e) => updateField('email', e.target.value)}
+                  placeholder="you@example.com"
+                  className="w-full bg-surface-card border border-border-default text-text-primary placeholder:text-text-tertiary/50 focus:border-dc-400 focus:ring-1 focus:ring-dc-200 rounded-xl px-4 py-2.5 focus:outline-none transition-all text-sm"
+                />
               </div>
 
-              {/* Error Message */}
               {error && (
                 <motion.div
                   initial={{ opacity: 0, y: -5 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="flex items-center gap-2 text-sm text-red-400 bg-red-500/10 px-4 py-2.5 rounded-xl"
+                  className="flex items-center gap-2 text-sm text-dc-600 bg-dc-50 px-4 py-2.5 rounded-xl border border-dc-200"
                 >
                   <AlertCircle size={15} />
                   {error}
                 </motion.div>
               )}
 
-              {/* Submit */}
               <button
                 type="submit"
                 disabled={sending}
-                className="w-full flex items-center justify-center gap-2 bg-dc-600 hover:bg-dc-500 disabled:bg-dc-600/50 text-white rounded-xl px-6 py-3 text-sm font-medium transition-all duration-200 hover:scale-[1.01] active:scale-[0.99] shadow-lg shadow-dc-600/20"
+                className="group relative w-full flex items-center justify-center gap-2 bg-dc-600 hover:bg-dc-500 disabled:bg-dc-400/50 text-white rounded-xl px-6 py-3 text-sm font-medium transition-all duration-200 hover:shadow-lg hover:shadow-dc-600/20 active:scale-[0.99] overflow-hidden"
               >
+                <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
                 {sending ? (
                   <>
-                    <Loader2 size={16} className="animate-spin" />
+                    <Loader2 size={15} className="animate-spin" />
                     Sending...
                   </>
                 ) : (
                   <>
-                    <Send size={16} />
+                    <Send size={15} />
                     Submit Feedback
                   </>
                 )}
               </button>
-
-              <p className="text-xs text-text-tertiary text-center">
-                Your feedback helps us build a better Dardcor Code for everyone.
-              </p>
             </form>
           )}
         </motion.div>

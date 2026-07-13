@@ -6,47 +6,39 @@ import { Code2, Terminal, Package, Columns3, ArrowRight } from 'lucide-react';
 const products = [
   {
     title: 'Dardcor Code',
-    desc: 'AI-powered IDE with autonomous agent integration. Tab completions, inline commands, and a side panel agent that ships features for you.',
+    desc: 'The agent-first IDE. Autonomous agents plan, implement, test, and deploy from within your editor. Features tab completions, inline commands, and a side panel agent.',
     icon: Code2,
-    gradient: 'from-dc-500/20 to-purple-500/10',
-    iconBg: 'bg-dc-500/15',
-    iconColor: 'text-dc-400',
-    glowClass: 'glow-violet',
-    span: 'md:col-span-8 md:row-span-2',
-    height: 'min-h-[380px]',
+    accent: 'from-dc-50 to-dc-100/30',
+    iconBg: 'bg-dc-50',
+    iconColor: 'text-dc-600',
+    span: 'md:col-span-2 md:row-span-2',
   },
   {
     title: 'Dardcor CLI',
-    desc: 'Terminal-native agent for rapid coding sessions. Zero overhead, perfect for automation pipelines, scripting, and remote workspaces.',
+    desc: 'Terminal-native agent for scripting, automation, and rapid prototyping. Zero overhead — runs in any shell, on any machine.',
     icon: Terminal,
-    gradient: 'from-blue-500/20 to-cyan-500/10',
-    iconBg: 'bg-blue-500/15',
-    iconColor: 'text-blue-400',
-    glowClass: 'glow-cyan',
-    span: 'md:col-span-4',
-    height: 'min-h-[240px]',
+    accent: 'from-cyan-50 to-cyan-100/30',
+    iconBg: 'bg-cyan-50',
+    iconColor: 'text-cyan-accent',
+    span: 'md:col-span-1',
   },
   {
     title: 'Dardcor SDK',
-    desc: 'Extend and build custom agents with our TypeScript SDK. Plug into any LLM, add custom tools, and deploy your own agentic workflows.',
+    desc: 'Build custom agents with the TypeScript SDK. Connect any LLM, add custom tools, define workflows, and integrate into your existing pipeline.',
     icon: Package,
-    gradient: 'from-emerald-500/20 to-teal-500/10',
-    iconBg: 'bg-emerald-500/15',
-    iconColor: 'text-emerald-400',
-    glowClass: 'glow-cyan',
-    span: 'md:col-span-5',
-    height: 'min-h-[280px]',
+    accent: 'from-dc-50 to-dc-100/30',
+    iconBg: 'bg-dc-50',
+    iconColor: 'text-dc-600',
+    span: 'md:col-span-1',
   },
   {
     title: 'Dardcor Manager',
-    desc: 'Mission control for orchestrating multiple agents across workspaces. Monitor, delegate, and observe parallel agent execution in real-time.',
+    desc: 'Orchestrate multiple agents across workspaces and repositories. Monitor execution, delegate tasks, and observe parallel agent workflows in real time.',
     icon: Columns3,
-    gradient: 'from-amber-500/20 to-orange-500/10',
-    iconBg: 'bg-amber-500/15',
-    iconColor: 'text-amber-400',
-    glowClass: 'glow-amber',
-    span: 'md:col-span-7',
-    height: 'min-h-[280px]',
+    accent: 'from-cyan-50 to-cyan-100/30',
+    iconBg: 'bg-cyan-50',
+    iconColor: 'text-cyan-accent',
+    span: 'md:col-span-2',
   },
 ];
 
@@ -58,87 +50,74 @@ const containerVariants: Variants = {
 };
 
 const cardVariants: Variants = {
-  hidden: { opacity: 0, y: 40 },
+  hidden: { opacity: 0, y: 30 },
   visible: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.6, ease: 'easeOut' },
+    transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] as const },
   },
 };
 
 export default function ProductCards() {
   return (
-    <section className="relative py-24 sm:py-32 px-4 sm:px-6 gradient-bg">
+    <section className="relative py-24 sm:py-32 px-4 sm:px-6">
       <div className="relative z-10 max-w-7xl mx-auto">
-        {/* Section Header */}
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: '-80px' }}
-          transition={{ duration: 0.6, ease: 'easeOut' }}
-          className="text-center md:text-left mb-16 md:mb-24 flex flex-col md:flex-row md:items-end md:justify-between gap-6"
+          transition={{ duration: 0.5 }}
+          className="text-center md:text-left mb-16 md:mb-20"
         >
-          <div className="max-w-3xl">
-            <h2 className="font-serif text-3xl sm:text-4xl md:text-5xl font-bold text-text-primary tracking-tight">
-              Everything you need to{' '}
-              <span className="text-gradient block mt-2">build the new way</span>
+          <span className="section-eyebrow mb-3">Product ecosystem</span>
+          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-display font-bold text-text-primary tracking-tight max-w-3xl">
+              A complete agent platform
             </h2>
+            <p className="text-text-secondary max-w-md leading-relaxed">
+              IDE, CLI, SDK, orchestrator — the tools you need to adopt agentic development on your terms.
+            </p>
           </div>
-          <p className="text-lg text-text-secondary max-w-md">
-            From IDE to CLI to SDK — Dardcor Code is a complete platform for the agent-first era.
-          </p>
         </motion.div>
 
-        {/* Product Cards Grid - Asymmetric Layout */}
         <motion.div
           variants={containerVariants}
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: '-80px' }}
-          className="grid grid-cols-1 md:grid-cols-12 gap-6 sm:gap-8"
+          className="grid grid-cols-1 md:grid-cols-3 gap-5"
         >
           {products.map((p) => (
             <motion.div
               key={p.title}
               variants={cardVariants}
               className={`relative ${p.span} w-full`}
-              style={{ perspective: 1000 }}
             >
-              <motion.div
-                whileHover={{ scale: 1.02, rotateX: 3, rotateY: -3 }}
-                transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                className={`group relative h-full rounded-2xl overflow-hidden card-hover ${p.glowClass}`}
-              >
-                {/* Gradient background */}
-                <div className={`absolute inset-0 bg-gradient-to-br ${p.gradient} opacity-50 group-hover:opacity-100 transition-opacity duration-500`} />
+              <div className="group relative h-full card-base p-6 sm:p-8 hover:-translate-y-1.5 hover:shadow-xl hover:shadow-dc-500/10 transition-all duration-500">
+                <div className={`absolute inset-0 bg-gradient-to-br ${p.accent} opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-2xl pointer-events-none`} />
 
-                {/* Card content */}
-                <div className={`relative h-full flex flex-col bg-surface-card/80 backdrop-blur-sm border border-border-subtle group-hover:border-border-default rounded-2xl p-6 sm:p-7 transition-all duration-500 z-10 ${p.height}`}>
-                  {/* Icon */}
-                  <div className={`w-12 h-12 rounded-xl ${p.iconBg} flex items-center justify-center mb-8`}>
-                    <p.icon size={24} className={p.iconColor} />
+                <div className="relative z-10 flex flex-col h-full">
+                  <div className={`w-11 h-11 rounded-xl ${p.iconBg} flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300`}>
+                    <p.icon size={22} className={p.iconColor} />
                   </div>
 
-                  <div className="mt-auto">
-                    {/* Title */}
-                    <h3 className="font-serif text-2xl font-semibold text-text-primary mb-3">{p.title}</h3>
-
-                    {/* Description */}
-                    <p className="text-sm text-text-secondary leading-relaxed mb-6 max-w-md">
+                  <div className="flex flex-col flex-1">
+                    <h3 className="font-display text-xl font-bold text-text-primary mb-3 group-hover:text-dc-600 transition-colors duration-300">
+                      {p.title}
+                    </h3>
+                    <p className="text-sm text-text-secondary leading-relaxed mb-6 flex-1">
                       {p.desc}
                     </p>
-
-                    {/* CTA */}
                     <Link
                       to="/release"
-                      className="inline-flex items-center gap-2 text-sm font-semibold text-dc-400 group/link"
+                      className="inline-flex items-center gap-1.5 text-sm font-semibold text-dc-600 group/link"
                     >
-                      Learn more
-                      <ArrowRight size={16} className="transition-transform duration-300 group-hover/link:translate-x-1" />
+                      <span>Learn more</span>
+                      <ArrowRight size={14} className="transition-all duration-300 group-hover/link:translate-x-1" />
                     </Link>
                   </div>
                 </div>
-              </motion.div>
+              </div>
             </motion.div>
           ))}
         </motion.div>
