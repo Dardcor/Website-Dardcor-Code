@@ -1,0 +1,102 @@
+diff --git a/src/components/layout/Footer.tsx b/src/components/layout/Footer.tsx
+--- a/src/components/layout/Footer.tsx
++++ b/src/components/layout/Footer.tsx
+@@ -76,7 +76,7 @@ export default function Footer() {
+               <a
+                 href="https://github.com/Dardcor"
+                 target="_blank"
+-                rel="noreferrer"
++                rel="noopener noreferrer"
+                 className="w-7 h-7 rounded-lg bg-dc-50/50 hover:bg-dc-100 flex items-center justify-center text-text-tertiary hover:text-dc-600 transition-all duration-300"
+                 aria-label="Dardcor on GitHub"
+               >
+@@ -85,7 +85,7 @@ export default function Footer() {
+               <a
+                 href="https://twitter.com/dardcor"
+                 target="_blank"
+-                rel="noreferrer"
++                rel="noopener noreferrer"
+                 className="w-7 h-7 rounded-lg bg-dc-50/50 hover:bg-dc-100 flex items-center justify-center text-text-tertiary hover:text-dc-600 transition-all duration-300"
+                 aria-label="Dardcor on X (Twitter)"
+               >
+@@ -94,7 +94,7 @@ export default function Footer() {
+               <a
+                 href="https://youtube.com/@dardcor"
+                 target="_blank"
+-                rel="noreferrer"
++                rel="noopener noreferrer"
+                 className="w-7 h-7 rounded-lg bg-dc-50/50 hover:bg-dc-100 flex items-center justify-center text-text-tertiary hover:text-dc-600 transition-all duration-300"
+                 aria-label="Dardcor on YouTube"
+               >
+@@ -121,7 +121,7 @@ export default function Footer() {
+                         <a
+                           href={link.href}
+                           target="_blank"
+-                          rel="noreferrer"
++                          rel="noopener noreferrer"
+                           className="text-sm text-text-tertiary hover:text-text-primary transition-colors"
+                         >
+                           {link.name}
+diff --git a/src/components/sections/Blog.tsx b/src/components/sections/Blog.tsx
+--- a/src/components/sections/Blog.tsx
++++ b/src/components/sections/Blog.tsx
+@@ -41,7 +41,7 @@ function BlogCard({ post, index, featured }: { post: typeof posts[0]; index: num
+     <motion.a
+       href={post.href}
+       target="_blank"
+-      rel="noreferrer"
++      rel="noopener noreferrer"
+       initial={{ opacity: 0, y: 20 }}
+       whileInView={{ opacity: 1, y: 0 }}
+       viewport={{ once: true, margin: '-80px' }}
+@@ -137,7 +137,7 @@ export default function Blog() {
+           <a
+             href="https://github.com/Dardcor/Dardcor-Code"
+             target="_blank"
+-            rel="noreferrer"
++            rel="noopener noreferrer"
+             className="inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-border-default text-sm font-medium text-text-secondary hover:text-text-primary hover:border-dc-300 transition-all"
+           >
+             Read all articles
+diff --git a/src/components/sections/Hero.tsx b/src/components/sections/Hero.tsx
+--- a/src/components/sections/Hero.tsx
++++ b/src/components/sections/Hero.tsx
+@@ -145,7 +145,7 @@ export default function Hero() {
+               <a
+                 href="https://github.com/Dardcor/Dardcor-Code"
+                 target="_blank"
+-                rel="noreferrer"
++                rel="noopener noreferrer"
+                 className="inline-flex items-center gap-1 text-text-tertiary hover:text-text-primary transition-colors"
+               >
+                 <svg width={12} height={12} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z" /></svg>
+diff --git a/src/pages/ReleasePage.tsx b/src/pages/ReleasePage.tsx
+--- a/src/pages/ReleasePage.tsx
++++ b/src/pages/ReleasePage.tsx
+@@ -166,7 +166,7 @@ function DownloadCard({ group }: { group: { label: string; key: string; assets:
+               <a
+                 key={asset.name}
+                 href={asset.browser_download_url}
+                 target="_blank"
+-                rel="noreferrer"
++                rel="noopener noreferrer"
+                 className="flex items-center justify-between gap-3 w-full px-3.5 py-2.5 rounded-xl bg-dc-50/30 hover:bg-dc-50 border border-transparent hover:border-dc-200 transition-all group"
+               >
+@@ -400,7 +400,7 @@ export default function ReleasePage() {
+                           <a
+                             href={release.html_url}
+                             target="_blank"
+-                            rel="noreferrer"
++                            rel="noopener noreferrer"
+                             className="flex items-center gap-1.5 text-xs text-text-tertiary hover:text-text-primary transition-colors"
+                           >
+                             <ExternalLink size={12} />
+@@ -410,7 +410,7 @@ export default function ReleasePage() {
+                         <a
+                           href="https://github.com/Dardcor/Dardcor-Code/releases"
+                           target="_blank"
+-                          rel="noreferrer"
++                          rel="noopener noreferrer"
+                           className="flex items-center gap-1.5 text-xs text-text-tertiary hover:text-text-primary transition-colors ml-auto"
+                         >
+                           All releases

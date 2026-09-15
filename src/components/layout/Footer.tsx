@@ -23,36 +23,39 @@ const footerLinks: { title: string; links: { name: string; href: string; externa
   {
     title: 'Product',
     links: [
-      { name: 'Dardcor Code', href: '/' },
-      { name: 'Dardcor CLI', href: '/' },
-      { name: 'Dardcor SDK', href: '/' },
-      { name: 'Dardcor Manager', href: '/' },
-      { name: 'API Reference', href: '/release' },
+      { name: 'Download', href: '/download' },
+      { name: 'Agents', href: '/features/agents' },
+      { name: 'Models & Router', href: '/features/models' },
+      { name: 'Enterprise', href: '/features/enterprise' },
+      { name: 'Extensibility', href: '/features/extensibility' },
     ],
   },
   {
     title: 'Resources',
     links: [
-      { name: 'Documentation', href: 'https://github.com/Dardcor/Dardcor-Code', external: true },
-      { name: 'Changelog', href: 'https://github.com/Dardcor/Dardcor-Code/releases', external: true },
-      { name: 'Tutorials', href: '/#blog' },
-      { name: 'FAQ', href: '/' },
+      { name: 'Documentation', href: '/docs' },
+      { name: 'API Reference', href: '/api' },
+      { name: 'FAQ', href: '/faq' },
+      { name: 'MCP Catalog', href: '/mcp' },
+      { name: 'Learn & Tutorials', href: '/learn' },
     ],
   },
   {
-    title: 'Company',
+    title: 'Updates & Community',
     links: [
-      { name: 'About', href: '/' },
-      { name: 'Blog', href: '/#blog' },
-      { name: 'Contact', href: 'mailto:hello@dardcor.dev', external: true },
+      { name: 'Release Notes', href: '/updates' },
+      { name: 'Blog', href: '/blog' },
+      { name: 'GitHub Repository', href: 'https://github.com/Dardcor/Dardcor-Code', external: true },
+      { name: 'Contact Team', href: 'mailto:hello@dardcor.dev', external: true },
     ],
   },
   {
-    title: 'Legal',
+    title: 'Trust & Governance',
     links: [
-      { name: 'Privacy Policy', href: '/' },
-      { name: 'Terms of Service', href: '/' },
-      { name: 'Security', href: '/' },
+      { name: 'Air-Gapped Security', href: '/features/enterprise' },
+      { name: 'Package Signatures', href: '/updates' },
+      { name: 'License (MIT)', href: 'https://github.com/Dardcor/Dardcor-Code/blob/main/LICENSE', external: true },
+      { name: 'Support', href: 'mailto:support@dardcor.dev', external: true },
     ],
   },
 ];
@@ -64,7 +67,7 @@ export default function Footer() {
         <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-8 mb-10">
           <div className="lg:col-span-1">
             <Link to="/" className="flex items-center gap-2.5 mb-4">
-              <img src="/dardcor.png" alt="Dardcor" className="h-6 w-auto rounded" />
+              <img src="/dardcor.png" alt="Dardcor Code" className="h-6 w-auto rounded" />
               <span className="font-display font-semibold text-text-primary text-sm">
                 Dardcor <span className="text-dc-600">Code</span>
               </span>
@@ -76,7 +79,7 @@ export default function Footer() {
               <a
                 href="https://github.com/Dardcor"
                 target="_blank"
-                rel="noreferrer"
+                rel="noopener noreferrer"
                 className="w-7 h-7 rounded-lg bg-dc-50/50 hover:bg-dc-100 flex items-center justify-center text-text-tertiary hover:text-dc-600 transition-all duration-300"
                 aria-label="Dardcor on GitHub"
               >
@@ -85,16 +88,16 @@ export default function Footer() {
               <a
                 href="https://twitter.com/dardcor"
                 target="_blank"
-                rel="noreferrer"
+                rel="noopener noreferrer"
                 className="w-7 h-7 rounded-lg bg-dc-50/50 hover:bg-dc-100 flex items-center justify-center text-text-tertiary hover:text-dc-600 transition-all duration-300"
-                aria-label="Dardcor on X (Twitter)"
+                aria-label="Dardcor on X"
               >
                 <TwitterIcon size={14} />
               </a>
               <a
                 href="https://youtube.com/@dardcor"
                 target="_blank"
-                rel="noreferrer"
+                rel="noopener noreferrer"
                 className="w-7 h-7 rounded-lg bg-dc-50/50 hover:bg-dc-100 flex items-center justify-center text-text-tertiary hover:text-dc-600 transition-all duration-300"
                 aria-label="Dardcor on YouTube"
               >
@@ -102,6 +105,8 @@ export default function Footer() {
               </a>
               <a
                 href="mailto:hello@dardcor.dev"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="w-7 h-7 rounded-lg bg-dc-50/50 hover:bg-dc-100 flex items-center justify-center text-text-tertiary hover:text-dc-600 transition-all duration-300"
                 aria-label="Email Dardcor"
               >
@@ -121,7 +126,7 @@ export default function Footer() {
                         <a
                           href={link.href}
                           target="_blank"
-                          rel="noreferrer"
+                          rel="noopener noreferrer"
                           className="text-sm text-text-tertiary hover:text-text-primary transition-colors"
                         >
                           {link.name}
@@ -144,10 +149,10 @@ export default function Footer() {
 
         <div className="pt-6 border-t border-border-default flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-xs text-text-tertiary">
-            &copy; {new Date().getFullYear()} Dardcor. All rights reserved.
+            &copy; {new Date().getFullYear()} Dardcor. All rights reserved. Built for the developer community.
           </p>
           <p className="text-xs text-text-tertiary">
-            Built for the developer community
+            Built for the developer community.
           </p>
         </div>
       </div>

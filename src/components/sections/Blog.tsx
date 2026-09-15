@@ -4,7 +4,7 @@ import { ArrowRight, ArrowUpRight } from 'lucide-react';
 const posts = [
   {
     title: 'Building a Multi-Agent System with Dardcor Manager',
-    excerpt: 'Learn how to orchestrate multiple agents across distributed workspaces — parallel execution, task delegation, and real-time coordination.',
+    excerpt: 'Learn how to orchestrate multiple agents across distributed workspaces with parallel execution, task delegation, and real-time coordination.',
     date: 'July 8, 2026',
     category: 'Engineering',
     readTime: '12 min read',
@@ -20,7 +20,7 @@ const posts = [
   },
   {
     title: 'From Issue to PR: A Complete Workflow Walkthrough',
-    excerpt: 'Follow along as Dardcor Code takes a GitHub issue through planning, implementation, testing, and pull request — autonomously.',
+    excerpt: 'Follow along as Dardcor Code takes a GitHub issue through planning, implementation, testing, and pull request autonomously.',
     date: 'June 20, 2026',
     category: 'Tutorial',
     readTime: '6 min read',
@@ -41,7 +41,7 @@ function BlogCard({ post, index, featured }: { post: typeof posts[0]; index: num
     <motion.a
       href={post.href}
       target="_blank"
-      rel="noreferrer"
+      rel="noopener noreferrer"
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: '-80px' }}
@@ -137,7 +137,7 @@ export default function Blog() {
           <a
             href="https://github.com/Dardcor/Dardcor-Code"
             target="_blank"
-            rel="noreferrer"
+            rel="noopener noreferrer"
             className="inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-border-default text-sm font-medium text-text-secondary hover:text-text-primary hover:border-dc-300 transition-all"
           >
             Read all articles

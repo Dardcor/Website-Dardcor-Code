@@ -15,7 +15,7 @@ const products = [
   },
   {
     title: 'Dardcor CLI',
-    desc: 'Terminal-native agent for scripting, automation, and rapid prototyping. Zero overhead — runs in any shell, on any machine.',
+    desc: 'Terminal-native agent for scripting, automation, and rapid prototyping. Zero overhead, runs in any shell on any machine.',
     icon: Terminal,
     accent: 'from-cyan-50 to-cyan-100/30',
     iconBg: 'bg-cyan-50',
@@ -75,7 +75,7 @@ export default function ProductCards() {
               A complete agent platform
             </h2>
             <p className="text-text-secondary max-w-md leading-relaxed">
-              IDE, CLI, SDK, orchestrator — the tools you need to adopt agentic development on your terms.
+              IDE, CLI, SDK, orchestrator: the tools you need to adopt agentic development on your terms.
             </p>
           </div>
         </motion.div>

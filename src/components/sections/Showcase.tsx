@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
-import { Code2, Eye } from 'lucide-react';
+import { Code2, Sparkles } from 'lucide-react';
 
 export default function Showcase() {
   const [imgLoaded, setImgLoaded] = useState(false);
@@ -11,56 +11,56 @@ export default function Showcase() {
     offset: ['start end', 'end start'],
   });
 
-  const windowY = useTransform(scrollYProgress, [0, 0.5, 1], [60, 0, -60]);
-  const opacity = useTransform(scrollYProgress, [0, 0.15, 0.85, 1], [0.3, 1, 1, 0.3]);
-  const scale = useTransform(scrollYProgress, [0, 0.2, 0.8, 1], [0.95, 1, 1, 0.95]);
+  const windowY = useTransform(scrollYProgress, [0, 0.5, 1], [40, 0, -40]);
+  const opacity = useTransform(scrollYProgress, [0, 0.15, 0.85, 1], [0.4, 1, 1, 0.4]);
+  const scale = useTransform(scrollYProgress, [0, 0.2, 0.8, 1], [0.97, 1, 1, 0.97]);
 
   return (
-    <section ref={sectionRef} id="showcase" className="relative py-24 sm:py-32 px-4 sm:px-6 overflow-hidden">
+    <section ref={sectionRef} id="showcase" className="relative py-20 sm:py-28 px-4 sm:px-6 overflow-hidden">
       <div className="relative z-10 max-w-6xl mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: '-80px' }}
           transition={{ duration: 0.5 }}
-          className="text-center mb-12"
+          className="text-center mb-10"
         >
-          <span className="section-eyebrow mb-3">See it in action</span>
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-display font-bold text-text-primary tracking-tight">
-            Agent-driven development
+          <span className="section-eyebrow mb-3">Native Workspace</span>
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-display font-bold text-white tracking-tight">
+            A world-class code editor meets autonomous AI
           </h2>
-          <p className="mt-4 text-base sm:text-lg text-text-secondary max-w-2xl mx-auto leading-relaxed">
-            Watch Dardcor Code autonomously plan, build, and deploy a production-grade
-            REST API — from a single sentence description to a deployed endpoint.
+          <p className="mt-4 text-base sm:text-lg text-[#b3a8c9] max-w-3xl mx-auto leading-relaxed">
+            Dardcor Code pairs a familiar Monaco-powered explorer and keyboard workflows with deep-integrated autonomous agents, AST-aware planning, and direct model harnesses.
           </p>
         </motion.div>
 
         <motion.div
           style={{ y: windowY, opacity, scale }}
-          className="w-full rounded-2xl overflow-hidden border border-border-default bg-surface-card shadow-xl shadow-dc-500/5 hover:border-dc-300 transition-colors duration-500"
+          className="w-full rounded-2xl overflow-hidden border border-[#6a1b9a] bg-[#08040e] shadow-2xl shadow-purple-950/60 hover:border-[#8e24aa] transition-colors duration-500"
         >
-          <div className="flex items-center px-4 py-3 bg-surface-elevated border-b border-border-default">
-            <div className="flex gap-1.5">
-              <div className="w-2.5 h-2.5 rounded-full bg-red-400" />
-              <div className="w-2.5 h-2.5 rounded-full bg-yellow-400" />
-              <div className="w-2.5 h-2.5 rounded-full bg-green-400" />
+          <div className="flex items-center justify-between px-4 py-3 bg-[#0d0720] border-b border-purple-900/40">
+            <div className="flex items-center gap-2">
+              <span className="w-3 h-3 rounded-full bg-[#ff5f56]" />
+              <span className="w-3 h-3 rounded-full bg-[#ffbd2e]" />
+              <span className="w-3 h-3 rounded-full bg-[#27c93f]" />
+              <span className="ml-3 text-xs font-mono text-purple-300/80 hidden sm:inline">
+                Dardcor-Code [Explorer &amp; AI Agent Chat: Anthropic/claude Opus 4.6]
+              </span>
             </div>
-            <div className="mx-auto text-[11px] text-text-tertiary font-mono">
-              showcase — agent-session.ts — Dardcor Code
-            </div>
-            <div className="flex gap-1.5 items-center text-text-tertiary/50">
-              <Eye size={12} />
+            <div className="flex items-center gap-2">
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded text-[11px] font-mono font-medium bg-purple-950/80 text-purple-300 border border-purple-800/50">
+                <Sparkles size={12} className="text-purple-400" />
+                <span>v1.0.0 Active</span>
+              </span>
             </div>
           </div>
 
-          <div className="relative text-[0]" style={{ background: '#f0eff6' }}>
-            <div className="absolute inset-0 shadow-[inset_0_0_60px_rgba(255,255,255,0.5)] pointer-events-none z-10" />
-
+          <div className="relative text-[0] bg-black">
             <img
               src="/showcase.png"
-              alt="Dardcor Code Editor Showcase"
+              alt="Dardcor Code Editor Application Interface"
               className={`w-full h-auto align-middle transition-all duration-700 ${
-                imgLoaded ? 'opacity-100 scale-100' : 'opacity-0 scale-[1.02]'
+                imgLoaded ? 'opacity-100 scale-100' : 'opacity-0 scale-[1.01]'
               }`}
               onLoad={() => setImgLoaded(true)}
               loading="lazy"
@@ -68,15 +68,10 @@ export default function Showcase() {
             />
 
             {!imgLoaded && (
-              <div className="absolute inset-0 flex items-center justify-center bg-[#f0eff6] min-h-[400px]">
-                <div className="absolute inset-0" style={{
-                  background: 'linear-gradient(90deg, transparent, rgba(108,74,226,0.03), transparent)',
-                  backgroundSize: '200% 100%',
-                  animation: 'shimmer 3s ease-in-out infinite'
-                }} />
-                <div className="relative z-10 flex flex-col items-center gap-3">
-                  <Code2 size={36} className="text-dc-300/40" />
-                  <span className="text-xs text-text-tertiary/40 font-mono">Loading preview...</span>
+              <div className="flex items-center justify-center bg-black min-h-[420px]">
+                <div className="flex flex-col items-center gap-3">
+                  <Code2 size={40} className="text-purple-400 animate-pulse" />
+                  <span className="text-xs text-purple-300/60 font-mono">Loading Dardcor Code interface...</span>
                 </div>
               </div>
             )}

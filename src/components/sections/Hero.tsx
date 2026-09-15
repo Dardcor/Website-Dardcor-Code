@@ -1,217 +1,411 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { motion, type Variants } from 'framer-motion';
-import { ArrowRight, Terminal } from 'lucide-react';
+import { motion } from 'framer-motion';
+import type { Variants } from 'framer-motion';
+import { Download, ChevronDown, Copy, Check, FileCode, CheckCircle2, Play } from 'lucide-react';
 
-const stages = [
-  { label: 'Plan', desc: 'Architecture' },
-  { label: 'Code', desc: 'Implementation' },
-  { label: 'Test', desc: 'Verification' },
-  { label: 'Ship', desc: 'Deployment' },
-];
-
-function AgentFlow() {
-  const [activeIndex, setActiveIndex] = useState(0);
-  const [progress, setProgress] = useState(0);
-  const startTimeRef = useRef(0);
-
-  useEffect(() => {
-    startTimeRef.current = Date.now();
-    const interval = 2400;
-    const tick = () => {
-      const elapsed = Date.now() - startTimeRef.current;
-      const cycle = elapsed % interval;
-      const pct = cycle / interval;
-      setProgress(pct);
-      setActiveIndex(pct < 0.25 ? 0 : pct < 0.5 ? 1 : pct < 0.75 ? 2 : 3);
-    };
-    const id = setInterval(tick, 32);
-    return () => clearInterval(id);
-  }, []);
-
-  return (
-    <div className="w-full max-w-lg mx-auto">
-      <div className="relative flex items-center justify-between">
-        {stages.map((stage, i) => {
-          const isActive = i === activeIndex;
-          const isPast = i < activeIndex;
-          return (
-            <div key={stage.label} className="flex flex-col items-center relative z-10">
-              <div
-                className={`w-10 h-10 rounded-full flex items-center justify-center text-xs font-bold transition-all duration-700 ${
-                  isActive
-                    ? 'bg-dc-500 text-white shadow-[0_0_16px_rgba(108,74,226,0.25)] scale-110'
-                    : isPast
-                    ? 'bg-dc-100 text-dc-600'
-                    : 'bg-black/[0.04] text-text-tertiary'
-                }`}
-              >
-                {i + 1}
-              </div>
-              <span
-                className={`mt-3 text-sm font-semibold font-display transition-all duration-500 ${
-                  isActive ? 'text-text-primary' : 'text-text-tertiary'
-                }`}
-              >
-                {stage.label}
-              </span>
-              <span
-                className={`text-[11px] font-sans transition-all duration-500 ${
-                  isActive ? 'text-text-secondary' : 'text-text-tertiary/50'
-                }`}
-              >
-                {stage.desc}
-              </span>
-            </div>
-          );
-        })}
-        <div className="absolute top-5 left-[calc(10px)] right-[calc(10px)] h-px -translate-y-1/2 bg-black/[0.06]">
-          <div
-            className="h-full bg-gradient-to-r from-dc-500 via-dc-400 to-dc-500 transition-all duration-300"
-            style={{ width: `${(activeIndex + progress * 0.25) * 33.33}%` }}
-          />
-        </div>
-      </div>
-      <div className="mt-8 text-center">
-        <span className="inline-flex items-center gap-2 text-xs text-text-secondary font-mono bg-dc-50/50 px-4 py-2 rounded-full border border-dc-100">
-          <span className="w-1.5 h-1.5 rounded-full bg-dc-500 animate-pulse-dot" />
-          Agent cycle: <span className="text-dc-600 font-semibold">{stages[activeIndex].label}</span>
-          <span className="text-text-tertiary">autonomous</span>
-        </span>
-      </div>
-    </div>
-  );
+interface CodeSnippet {
+  filename: string;
+  language: string;
+  status: string;
+  code: string[];
 }
 
-const containerAnim = {
+const snippets: CodeSnippet[] = [
+  {
+    filename: 'MailList.tsx',
+    language: 'Solid / TS',
+    status: 'Agent inline refactor',
+    code: [
+      'import { For, Show, createMemo, createSignal, onMount } from "solid-js";',
+      'import { useMail } from "./mail";',
+      'import { Item } from "./Item";',
+      '',
+      'export function MailList() {',
+      '  const { items, query, load } = useMail();',
+      '  const [focus, setFocus] = createSignal(0);',
+      '  const [top, setTop] = createSignal(0);',
+      '',
+      '  const visible = createMemo(() => {',
+      '    const q = query().toLowerCase();',
+      '    return items()',
+      '      .filter((m) => m.subject.toLowerCase().includes(q))',
+      '      .slice(top(), top() + 24);',
+      '  });',
+      '',
+      '  onMount(() => load());',
+      '',
+      '  return (',
+      '    <Show when={visible().length} fallback={<Empty />}>',
+      '      <For each={visible()}>',
+      '        {(m, i) => <Item mail={m} active={i() === focus()} />}',
+      '      </For>',
+      '    </Show>',
+      '  );',
+      '}',
+    ],
+  },
+  {
+    filename: 'batch.go',
+    language: 'Go',
+    status: 'Parallel task fan-out',
+    code: [
+      'package http',
+      '',
+      'import (',
+      '    "context"',
+      '    "net/http"',
+      '    "time"',
+      '    "golang.org/x/sync/errgroup"',
+      '    "golang.org/x/sync/semaphore"',
+      ')',
+      '',
+      'func (s *Server) handleBatch(w http.ResponseWriter, r *http.Request) {',
+      '    ctx, cancel := context.WithTimeout(r.Context(), 30*time.Second)',
+      '    defer cancel()',
+      '',
+      '    sem := semaphore.NewWeighted(8)',
+      '    g, gctx := errgroup.WithContext(ctx)',
+      '',
+      '    for _, fh := range files {',
+      '        g.Go(func() error {',
+      '            if err := sem.Acquire(gctx, 1); err != nil { return err }',
+      '            defer sem.Release(1)',
+      '            return process(gctx, s, fh)',
+      '        })',
+      '    }',
+      '    _ = g.Wait()',
+      '}',
+    ],
+  },
+  {
+    filename: 'agent_graph.py',
+    language: 'Python',
+    status: 'Autonomous supervisor',
+    code: [
+      'import asyncio',
+      'from dardcor.runtime import AgentSupervisor, TaskPlan',
+      '',
+      'async def run_autonomous_pipeline(repo_path: str):',
+      '    supervisor = AgentSupervisor(root=repo_path)',
+      '    plan = await supervisor.create_plan(',
+      '        goal="Implement strict CSP headers and verify build suite"',
+      '    )',
+      '',
+      '    # Run planner, coder, and test runner agents in parallel',
+      '    results = await supervisor.execute_parallel(plan.steps)',
+      '    assert results.all_passed(), "Build verification failed"',
+      '    return supervisor.commit_and_create_pr(title="feat: Security hardening")',
+      '',
+      'if __name__ == "__main__":',
+      '    asyncio.run(run_autonomous_pipeline("."))',
+    ],
+  },
+];
+
+const containerAnim: Variants = {
   hidden: {},
   visible: {
-    transition: { staggerChildren: 0.04 },
+    transition: { staggerChildren: 0.05 },
   },
 };
 
 const itemAnim: Variants = {
-  hidden: { opacity: 0, y: 24 },
+  hidden: { opacity: 0, y: 18 },
   visible: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] as const },
+    transition: { duration: 0.45, ease: [0.22, 1, 0.36, 1] },
   },
 };
 
-function MarqueeText() {
-  const items = [
-    'React', 'TypeScript', 'Node.js', 'Python', 'Go', 'Rust',
-    'Next.js', 'Vite', 'Tailwind', 'PostgreSQL', 'Docker', 'Kubernetes',
-    'React', 'TypeScript', 'Node.js', 'Python', 'Go', 'Rust',
-    'Next.js', 'Vite', 'Tailwind', 'PostgreSQL', 'Docker', 'Kubernetes',
-  ];
-
-  return (
-    <div className="w-full overflow-hidden py-3 border-y border-border-default">
-      <div className="animate-marquee flex gap-12 whitespace-nowrap">
-        {items.map((item, i) => (
-          <span key={i} className="inline-flex items-center gap-3 text-xs text-text-tertiary/30 font-mono">
-            <span className="w-1 h-1 rounded-full bg-dc-300" />
-            {item}
-          </span>
-        ))}
-      </div>
-    </div>
-  );
-}
-
 export default function Hero() {
+  const [activeTab, setActiveTab] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const [downloadDropdown, setDownloadDropdown] = useState(false);
+
+  useEffect(() => {
+    if (isPaused) return;
+    const interval = setInterval(() => {
+      setActiveTab((prev) => (prev + 1) % snippets.length);
+    }, 4500);
+    return () => clearInterval(interval);
+  }, [isPaused]);
+
+  const currentSnippet = snippets[activeTab];
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(currentSnippet.code.join('\n'));
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
   return (
-    <section className="relative min-h-screen flex items-center pt-28 pb-8 px-4 sm:px-6 overflow-hidden">
-      <div className="absolute top-[-20%] left-1/2 -translate-x-1/2 w-[80%] h-[70%] bg-gradient-radial from-dc-300/10 via-dc-400/5 to-transparent pointer-events-none" />
-      <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-surface-base via-surface-base/80 to-transparent pointer-events-none z-[1]" />
+    <section
+      id="hero"
+      className="relative min-h-[92vh] flex items-center pt-32 pb-20 px-4 sm:px-6 lg:px-8 overflow-hidden"
+    >
+      {/* Subtle deep purple atmospheric glow */}
+      <div className="absolute top-[-10%] left-1/2 -translate-x-1/2 w-[80%] h-[60%] bg-gradient-radial from-purple-900/25 via-purple-950/10 to-transparent pointer-events-none rounded-full blur-3xl" />
 
       <div className="relative z-10 max-w-7xl mx-auto w-full">
         <motion.div
           variants={containerAnim}
           initial="hidden"
           animate="visible"
-          className="flex flex-col lg:flex-row items-center gap-16 lg:gap-20"
+          className="grid grid-cols-1 lg:grid-cols-12 items-center gap-12 lg:gap-14"
         >
-          <div className="w-full lg:w-[52%] flex flex-col items-start text-left">
+          {/* Left Column: Headlines, CTAs, Secondary links */}
+          <div className="lg:col-span-6 flex flex-col items-start text-left">
+            {/* Version badge */}
             <motion.div
               variants={itemAnim}
-              className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-dc-50/40 border border-dc-100 text-xs text-text-secondary mb-8 hover:border-dc-300 transition-all duration-300"
+              className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-950/70 border border-purple-800/40 text-xs text-purple-200 mb-6"
             >
-              <span className="w-1.5 h-1.5 rounded-full bg-dc-500 animate-pulse-dot" />
-              v1.0 now available — free for individual developers
-              <span className="w-px h-3 bg-dc-200 mx-1" />
-              <a
-                href="https://github.com/Dardcor/Dardcor-Code"
-                target="_blank"
-                rel="noreferrer"
-                className="inline-flex items-center gap-1 text-text-tertiary hover:text-text-primary transition-colors"
-              >
-                <svg width={12} height={12} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z" /></svg>
-                GitHub
-              </a>
+              <span className="w-2 h-2 rounded-full bg-purple-400 animate-pulse" />
+              <span className="font-semibold text-purple-300">v1.132</span>
+              <span className="text-purple-400/60">•</span>
+              <span>Open Source Multi-Agent IDE</span>
             </motion.div>
 
-            <motion.h1 variants={itemAnim} className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-display font-bold leading-[1.05] tracking-tight">
-              <span className="text-text-primary">Engineering at </span>
-              <span className="animated-gradient-text">agent velocity</span>
+            {/* Main Headline */}
+            <motion.h1
+              variants={itemAnim}
+              className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight text-white leading-[1.08]"
+            >
+              Your home for multi-agent development
             </motion.h1>
 
+            {/* Subheadline */}
             <motion.p
               variants={itemAnim}
-              className="mt-6 text-lg sm:text-xl text-text-secondary max-w-xl leading-relaxed"
+              className="mt-6 text-base sm:text-lg text-[#a79fc2] max-w-xl leading-relaxed"
             >
-              Dardcor Code embeds autonomous agents directly into your editor.
-              Describe what you need — the agent plans, writes, tests, and deploys.
-              You stay in control, review every change, and ship faster.
+              Dardcor Code is a free, open source AI code editor. Build with AI agents that plan, code, and debug for you. Manage multi-agent workflows across environments on Linux, macOS, and Windows.
             </motion.p>
 
-            <motion.div variants={itemAnim} className="mt-10 flex flex-col sm:flex-row items-center gap-4">
-              <Link
-                to="/release"
-                className="group relative inline-flex items-center gap-2.5 bg-dc-600 hover:bg-dc-500 text-white px-8 py-3.5 rounded-xl text-sm font-semibold transition-all duration-300 shadow-lg shadow-dc-600/20 hover:shadow-dc-500/30 hover:scale-[1.02] active:scale-[0.98] overflow-hidden"
-              >
-                <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
-                <span className="relative">Download Free</span>
-                <ArrowRight size={16} className="relative group-hover:translate-x-1 transition-transform" />
-              </Link>
-              <a
-                href="#showcase"
-                onClick={(e) => {
-                  e.preventDefault();
-                  document.getElementById('showcase')?.scrollIntoView({ behavior: 'smooth' });
-                }}
-                className="group inline-flex items-center gap-2.5 px-8 py-3.5 rounded-xl text-sm font-semibold text-text-secondary hover:text-text-primary border border-border-default hover:border-dc-300 transition-all duration-300"
-              >
-                <Terminal size={16} className="text-dc-500 group-hover:scale-110 transition-transform" />
-                See how it works
-              </a>
-            </motion.div>
-          </div>
+            {/* Primary Download CTA with Dropdown */}
+            <motion.div
+              variants={itemAnim}
+              className="mt-8 flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full sm:w-auto relative"
+            >
+              <div className="inline-flex rounded-lg shadow-xl shadow-purple-950/50">
+                <Link
+                  to="/download"
+                  className="inline-flex items-center justify-center gap-2.5 bg-dc-600 hover:bg-dc-500 text-white font-semibold px-6 py-3.5 rounded-l-lg text-base transition-colors"
+                >
+                  <Download size={18} />
+                  <span>Download Dardcor Code</span>
+                </Link>
+                <button
+                  type="button"
+                  onClick={() => setDownloadDropdown(!downloadDropdown)}
+                  className="bg-dc-700 hover:bg-dc-600 text-white px-3 rounded-r-lg border-l border-purple-800/50 flex items-center justify-center transition-colors cursor-pointer"
+                  aria-label="Select Operating System"
+                  aria-expanded={downloadDropdown}
+                >
+                  <ChevronDown size={16} />
+                </button>
+              </div>
 
-          <motion.div variants={itemAnim} className="w-full lg:w-[48%]">
-            <div className="relative">
-              <div className="absolute -inset-16 bg-gradient-radial from-dc-300/10 to-transparent rounded-full blur-3xl pointer-events-none" />
-              <div className="relative bg-surface-card backdrop-blur-xl border border-border-default rounded-2xl p-8 sm:p-10 shadow-xl hover:border-dc-300 transition-all duration-500">
-                <div className="flex items-center gap-3 mb-8 pb-5 border-b border-border-default">
-                  <div className="w-8 h-8 rounded-lg bg-dc-50 flex items-center justify-center">
-                    <Terminal size={16} className="text-dc-600" />
+              {/* OS Dropdown Menu */}
+              {downloadDropdown && (
+                <div className="absolute top-full left-0 mt-2 w-72 bg-[#160f33] border border-purple-800/50 rounded-xl shadow-2xl p-2 z-50">
+                  <div className="text-[11px] font-semibold text-purple-300 uppercase px-3 py-1.5 tracking-wider">
+                    Direct Downloads (v1.0.0)
                   </div>
-                  <div>
-                    <span className="text-sm font-semibold text-text-primary font-display">Agent Execution Flow</span>
-                    <span className="text-[11px] text-text-tertiary block">Autonomous deployment cycle</span>
+                  <a
+                    href="https://github.com/Dardcor/Dardcor-Code/releases/download/Dardcor-Code-v1.0.0/Dardcor-Code_1.0.0_x64-setup.exe"
+                    onClick={() => setDownloadDropdown(false)}
+                    className="flex items-center justify-between px-3 py-2 text-sm text-purple-100 hover:bg-purple-900/40 rounded-lg transition-colors"
+                  >
+                    <span>Windows (x64)</span>
+                    <span className="text-xs text-purple-400 font-mono">.exe</span>
+                  </a>
+                  <a
+                    href="https://github.com/Dardcor/Dardcor-Code/releases/download/Dardcor-Code-v1.0.0/Dardcor-Code_1.0.0_aarch64.dmg"
+                    onClick={() => setDownloadDropdown(false)}
+                    className="flex items-center justify-between px-3 py-2 text-sm text-purple-100 hover:bg-purple-900/40 rounded-lg transition-colors"
+                  >
+                    <span>macOS (Apple Silicon)</span>
+                    <span className="text-xs text-purple-400 font-mono">.dmg</span>
+                  </a>
+                  <a
+                    href="https://github.com/Dardcor/Dardcor-Code/releases/download/Dardcor-Code-v1.0.0/Dardcor-Code_1.0.0_x64.dmg"
+                    onClick={() => setDownloadDropdown(false)}
+                    className="flex items-center justify-between px-3 py-2 text-sm text-purple-100 hover:bg-purple-900/40 rounded-lg transition-colors"
+                  >
+                    <span>macOS (Intel)</span>
+                    <span className="text-xs text-purple-400 font-mono">.dmg</span>
+                  </a>
+                  <a
+                    href="https://github.com/Dardcor/Dardcor-Code/releases/download/Dardcor-Code-v1.0.0/Dardcor-Code_1.0.0_amd64.deb"
+                    onClick={() => setDownloadDropdown(false)}
+                    className="flex items-center justify-between px-3 py-2 text-sm text-purple-100 hover:bg-purple-900/40 rounded-lg transition-colors"
+                  >
+                    <span>Linux (Debian, Ubuntu)</span>
+                    <span className="text-xs text-purple-400 font-mono">.deb</span>
+                  </a>
+                  <div className="pt-1.5 mt-1.5 border-t border-purple-800/40">
+                    <Link
+                      to="/download"
+                      onClick={() => setDownloadDropdown(false)}
+                      className="flex items-center justify-between px-3 py-2 text-xs font-medium text-purple-300 hover:text-white hover:bg-purple-900/40 rounded-lg transition-colors"
+                    >
+                      <span>All 25 Packages &amp; Checksums</span>
+                      <span>&rarr;</span>
+                    </Link>
                   </div>
                 </div>
-                <AgentFlow />
+              )}
+            </motion.div>
+
+            {/* Secondary links */}
+            <motion.div
+              variants={itemAnim}
+              className="mt-4 flex flex-wrap items-center gap-x-2.5 gap-y-1 text-xs text-[#756d94]"
+            >
+              <Link
+                to="/download"
+                className="text-purple-300 hover:text-white font-medium underline underline-offset-2 transition-colors"
+              >
+                Web
+              </Link>
+              <span>,</span>
+              <Link
+                to="/updates"
+                className="text-purple-300 hover:text-white font-medium underline underline-offset-2 transition-colors"
+              >
+                Updates &amp; Notes
+              </Link>
+              <span>, or</span>
+              <Link
+                to="/download"
+                className="text-purple-300 hover:text-white font-medium underline underline-offset-2 transition-colors"
+              >
+                other platforms
+              </Link>
+            </motion.div>
+
+            {/* Disclaimer */}
+            <motion.p
+              variants={itemAnim}
+              className="mt-3 text-xs text-[#756d94] leading-normal"
+            >
+              By using Dardcor Code, you agree to its{' '}
+              <a href="https://github.com/Dardcor/Dardcor-Code/blob/main/LICENSE.txt" target="_blank" rel="noopener noreferrer" className="underline hover:text-purple-300">license</a>{' '}
+              and{' '}
+              <a href="/#privacy" className="underline hover:text-purple-300">privacy statement</a>.
+            </motion.p>
+          </div>
+
+          {/* Right Column: Code Editor Mockup */}
+          <motion.div
+            variants={itemAnim}
+            className="lg:col-span-6 w-full"
+            onMouseEnter={() => setIsPaused(true)}
+            onMouseLeave={() => setIsPaused(false)}
+          >
+            <div className="relative">
+              {/* Outer soft glow */}
+              <div className="absolute -inset-4 bg-purple-600/10 rounded-2xl blur-xl pointer-events-none" />
+
+              {/* Editor Mockup Window */}
+              <div className="relative bg-[#110a26] text-purple-100 border border-purple-800/40 rounded-xl shadow-2xl overflow-hidden">
+                {/* Window title bar */}
+                <div className="flex items-center justify-between px-4 py-3 bg-[#0d0720] border-b border-purple-900/40">
+                  <div className="flex items-center gap-2">
+                    <span className="w-3 h-3 rounded-full bg-[#ff5f56]" />
+                    <span className="w-3 h-3 rounded-full bg-[#ffbd2e]" />
+                    <span className="w-3 h-3 rounded-full bg-[#27c93f]" />
+                    <span className="ml-3 text-xs font-mono text-purple-300/80">
+                      dardcor-workspace [multi-agent]
+                    </span>
+                  </div>
+
+                  <div className="flex items-center gap-3">
+                    <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[10px] font-mono font-medium bg-purple-950/80 text-purple-300 border border-purple-800/50">
+                      <span className="w-1.5 h-1.5 rounded-full bg-purple-400 animate-pulse" />
+                      {currentSnippet.status}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={handleCopy}
+                      className="text-purple-400 hover:text-white transition-colors p-1 rounded hover:bg-purple-900/30 cursor-pointer"
+                      title="Copy snippet"
+                      aria-label="Copy snippet"
+                    >
+                      {copied ? <Check size={14} className="text-emerald-400" /> : <Copy size={14} />}
+                    </button>
+                  </div>
+                </div>
+
+                {/* Tabs */}
+                <div className="flex items-center border-b border-purple-900/40 bg-[#0e0822] overflow-x-auto text-xs font-mono">
+                  {snippets.map((snippet, idx) => {
+                    const isActive = idx === activeTab;
+                    return (
+                      <button
+                        key={snippet.filename}
+                        type="button"
+                        onClick={() => setActiveTab(idx)}
+                        className={`flex items-center gap-2 px-4 py-2.5 border-r border-purple-900/30 transition-colors text-left whitespace-nowrap cursor-pointer ${
+                          isActive
+                            ? 'bg-[#110a26] text-white border-t-2 border-t-purple-500 font-semibold'
+                            : 'text-purple-300/60 hover:text-purple-200 hover:bg-purple-950/30'
+                        }`}
+                      >
+                        <FileCode size={13} className={isActive ? 'text-purple-400' : 'text-purple-400/50'} />
+                        <span>{snippet.filename}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {/* Code Content Area */}
+                <div className="p-4 sm:p-5 font-mono text-xs sm:text-[13px] leading-relaxed overflow-x-auto min-h-[320px] bg-[#110a26]">
+                  {currentSnippet.code.map((line, lineIdx) => (
+                    <div key={lineIdx} className="flex gap-4 group">
+                      <span className="select-none text-purple-400/30 text-right w-6 text-xs group-hover:text-purple-400/60">
+                        {lineIdx + 1}
+                      </span>
+                      <span className="flex-1 whitespace-pre">
+                        {line.startsWith('//') || line.startsWith('#') ? (
+                          <span className="text-purple-300/40 italic">{line}</span>
+                        ) : line.includes('import ') || line.includes('from ') || line.includes('export ') || line.includes('package ') ? (
+                          <span className="text-purple-400 font-medium">{line}</span>
+                        ) : line.includes('const ') || line.includes('func ') || line.includes('async ') || line.includes('def ') ? (
+                          <span className="text-cyan-400">{line}</span>
+                        ) : line.includes('"') || line.includes("'") ? (
+                          <span className="text-emerald-300">{line}</span>
+                        ) : (
+                          <span className="text-purple-100">{line}</span>
+                        )}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Editor status bar */}
+                <div className="flex items-center justify-between px-4 py-2 bg-[#0d0720] border-t border-purple-900/40 text-[11px] font-mono text-purple-300/70">
+                  <div className="flex items-center gap-4">
+                    <span className="flex items-center gap-1.5 text-purple-300">
+                      <Play size={10} className="text-purple-400" /> Language: {currentSnippet.language}
+                    </span>
+                    <span className="hidden sm:inline-block">UTF-8</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <span className="flex items-center gap-1 text-emerald-400">
+                      <CheckCircle2 size={11} /> Ready
+                    </span>
+                    <span>Tab {activeTab + 1} of {snippets.length}</span>
+                  </div>
+                </div>
               </div>
             </div>
           </motion.div>
         </motion.div>
-      </div>
-
-      <div className="absolute bottom-0 left-0 right-0 z-10">
-        <MarqueeText />
       </div>
     </section>
   );

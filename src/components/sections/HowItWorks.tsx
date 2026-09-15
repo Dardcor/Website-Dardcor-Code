@@ -5,7 +5,7 @@ const steps = [
   {
     icon: Bot,
     title: 'Describe what you need',
-    desc: 'Write a sentence in natural language or link an issue. The agent parses the request and produces a plan — architecture, dependencies, and test strategy — before writing a single line of code.',
+    desc: 'Write a sentence in natural language or link an issue. The agent parses the request and produces a plan (architecture, dependencies, and test strategy) before writing a single line of code.',
     detail: 'Works with GitHub issues, Jira tickets, or plain text.',
   },
   {
@@ -23,7 +23,7 @@ const steps = [
   {
     icon: Rocket,
     title: 'Ship with confidence',
-    desc: 'The agent opens a PR with a full description, test results, and deployment instructions — or deploys directly if configured. You get the final say.',
+    desc: 'The agent opens a PR with a full description, test results, and deployment instructions, or deploys directly if configured. You get the final say.',
     detail: 'One-click rollback if something goes wrong in production.',
   },
 ];
@@ -32,7 +32,7 @@ const capabilities = [
   {
     icon: Workflow,
     title: 'Context-aware',
-    desc: 'Agents read your entire project — codebase, configs, docs — before making decisions. No hallucinations from missing context.',
+    desc: 'Agents read your entire project (codebase, configs, docs) before making decisions. No hallucinations from missing context.',
   },
   {
     icon: Shield,

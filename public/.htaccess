@@ -1,0 +1,53 @@
+# ----------------------------------------------------------------------
+# | Single Page Application (SPA) Routing Fallback                     |
+# ----------------------------------------------------------------------
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+  RewriteRule ^index\.html$ - [L]
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule . /index.html [L]
+</IfModule>
+
+# ----------------------------------------------------------------------
+# | Security Headers                                                   |
+# ----------------------------------------------------------------------
+<IfModule mod_headers.c>
+  # Clickjacking protection (legacy browsers)
+  Header always set X-Frame-Options "DENY"
+
+  # Prevent MIME-type sniffing
+  Header always set X-Content-Type-Options "nosniff"
+
+  # Referrer policy
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+
+  # Permissions policy (camera, microphone, geolocation, payment disabled)
+  Header always set Permissions-Policy "camera=(), microphone=(), geolocation=(), payment=()"
+
+  # HTTP Strict Transport Security (HSTS) - HTTPS only (1 year, subdomains, preload)
+  Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload" env=HTTPS
+
+  # Content Security Policy (CSP)
+  Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://api.github.com https://fonts.googleapis.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self';"
+
+  # Restrict cross-domain policy files (Flash / PDF)
+  Header always set X-Permitted-Cross-Domain-Policies "none"
+
+  # Cross-Origin Isolation
+  Header always set Cross-Origin-Opener-Policy "same-origin"
+  Header always set Cross-Origin-Resource-Policy "same-origin"
+</IfModule>
+
+# ----------------------------------------------------------------------
+# | Prevent Directory Browsing                                         |
+# ----------------------------------------------------------------------
+<IfModule mod_autoindex.c>
+  Options -Indexes
+</IfModule>
+
+# ----------------------------------------------------------------------
+# | Default Character Encoding                                         |
+# ----------------------------------------------------------------------
+AddDefaultCharset UTF-8

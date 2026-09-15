@@ -413,12 +413,12 @@ export default function AnimatedBackground() {
         ctx.fill();
       }
 
-      // ── 8. Soft vignette ──
-      const vig = ctx.createRadialGradient(cw / 2, ch / 2, cw * 0.05, cw / 2, ch / 2, cw * 0.75);
-      vig.addColorStop(0, 'rgba(248, 247, 252, 0)');
-      vig.addColorStop(0.35, 'rgba(248, 247, 252, 0)');
-      vig.addColorStop(0.7, 'rgba(248, 247, 252, 0.03)');
-      vig.addColorStop(1, 'rgba(248, 247, 252, 0.35)');
+      // Soft dark purple vignette
+      const vig = ctx.createRadialGradient(cw / 2, ch / 2, cw * 0.1, cw / 2, ch / 2, cw * 0.8);
+      vig.addColorStop(0, 'rgba(9, 5, 20, 0)');
+      vig.addColorStop(0.4, 'rgba(9, 5, 20, 0.15)');
+      vig.addColorStop(0.8, 'rgba(9, 5, 20, 0.65)');
+      vig.addColorStop(1, 'rgba(9, 5, 20, 0.95)');
       ctx.fillStyle = vig;
       ctx.fillRect(0, 0, cw, ch);
 

@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import type { FC } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -10,11 +11,13 @@ import {
   FileCode,
   CheckCircle,
   ArrowLeft,
+  RefreshCw,
+  Clock,
+  ShieldCheck,
 } from 'lucide-react';
-import AnimatedBackground from '../components/ui/AnimatedBackground';
-import Footer from '../components/layout/Footer';
 
 const GITHUB_API = 'https://api.github.com/repos/Dardcor/Dardcor-Code/releases';
+const GITHUB_RELEASES_PAGE = 'https://github.com/Dardcor/Dardcor-Code/releases';
 
 interface ReleaseAsset {
   name: string;
@@ -29,6 +32,259 @@ interface GitHubRelease {
   published_at: string;
   html_url: string;
   assets: ReleaseAsset[];
+}
+
+interface OSGroup {
+  label: string;
+  key: string;
+  assets: ReleaseAsset[];
+  Icon: FC<{ className?: string }>;
+}
+
+interface ChangelogSection {
+  type: string;
+  items: string[];
+}
+
+interface ReleaseError {
+  type: 'rate_limit' | 'network' | 'generic';
+  message: string;
+  resetTime?: Date | null;
+}
+
+const FALLBACK_RELEASE: GitHubRelease = {
+  tag_name: 'Dardcor-Code-v1.0.0',
+  name: 'Dardcor Code v1.0.0 Official Release',
+  body: `## Features
+- Complete multi-agent orchestration architecture with autonomous planning, execution, and verification.
+- Monaco Editor engine with custom dark purple (#6A1B9A) theme and high-contrast accessibility.
+- Embedded Dardcor Router with unified BYOK proxy for Claude, GPT, Gemini, and Ollama.
+- High-performance Terminal PTY with native sub-shell isolation and zero network egress by default.
+- Full Model Context Protocol (MCP) client support for custom tool pipelines.
+
+## Security
+- Strict content security policy and sandboxed terminal execution.
+- GPG and Minisign dual cryptographic signatures (.sig) for all platform binaries.
+- Zero telemetry egress and air-gapped enterprise mode.`,
+  published_at: '2026-03-10T12:00:00.000Z',
+  html_url: 'https://github.com/Dardcor/Dardcor-Code/releases/tag/Dardcor-Code-v1.0.0',
+  assets: [
+    {
+      name: 'Dardcor-Code_1.0.0_x64-setup.exe',
+      browser_download_url: 'https://github.com/Dardcor/Dardcor-Code/releases/download/Dardcor-Code-v1.0.0/Dardcor-Code_1.0.0_x64-setup.exe',
+      size: 254067809,
+    },
+    {
+      name: 'Dardcor-Code_1.0.0_x64-setup.exe.sig',
+      browser_download_url: 'https://github.com/Dardcor/Dardcor-Code/releases/download/Dardcor-Code-v1.0.0/Dardcor-Code_1.0.0_x64-setup.exe.sig',
+      size: 69,
+    },
+    {
+      name: 'Dardcor-Code_1.0.0_x64_en-US.msi',
+      browser_download_url: 'https://github.com/Dardcor/Dardcor-Code/releases/download/Dardcor-Code-v1.0.0/Dardcor-Code_1.0.0_x64_en-US.msi',
+      size: 254067809,
+    },
+    {
+      name: 'Dardcor-Code_1.0.0_x64_en-US.msi.sig',
+      browser_download_url: 'https://github.com/Dardcor/Dardcor-Code/releases/download/Dardcor-Code-v1.0.0/Dardcor-Code_1.0.0_x64_en-US.msi.sig',
+      size: 69,
+    },
+    {
+      name: 'Dardcor-Code_1.0.0_aarch64.dmg',
+      browser_download_url: 'https://github.com/Dardcor/Dardcor-Code/releases/download/Dardcor-Code-v1.0.0/Dardcor-Code_1.0.0_aarch64.dmg',
+      size: 357184405,
+    },
+    {
+      name: 'Dardcor-Code_1.0.0_x64.dmg',
+      browser_download_url: 'https://github.com/Dardcor/Dardcor-Code/releases/download/Dardcor-Code-v1.0.0/Dardcor-Code_1.0.0_x64.dmg',
+      size: 357184405,
+    },
+    {
+      name: 'Dardcor-Code_aarch64.app.tar.gz',
+      browser_download_url: 'https://github.com/Dardcor/Dardcor-Code/releases/download/Dardcor-Code-v1.0.0/Dardcor-Code_aarch64.app.tar.gz',
+      size: 357184405,
+    },
+    {
+      name: 'Dardcor-Code_aarch64.app.tar.gz.sig',
+      browser_download_url: 'https://github.com/Dardcor/Dardcor-Code/releases/download/Dardcor-Code-v1.0.0/Dardcor-Code_aarch64.app.tar.gz.sig',
+      size: 65,
+    },
+    {
+      name: 'Dardcor-Code_universal.app.tar.gz',
+      browser_download_url: 'https://github.com/Dardcor/Dardcor-Code/releases/download/Dardcor-Code-v1.0.0/Dardcor-Code_universal.app.tar.gz',
+      size: 357184405,
+    },
+    {
+      name: 'Dardcor-Code_universal.app.tar.gz.sig',
+      browser_download_url: 'https://github.com/Dardcor/Dardcor-Code/releases/download/Dardcor-Code-v1.0.0/Dardcor-Code_universal.app.tar.gz.sig',
+      size: 65,
+    },
+    {
+      name: 'Dardcor-Code_x64.app.tar.gz',
+      browser_download_url: 'https://github.com/Dardcor/Dardcor-Code/releases/download/Dardcor-Code-v1.0.0/Dardcor-Code_x64.app.tar.gz',
+      size: 357184405,
+    },
+    {
+      name: 'Dardcor-Code_x64.app.tar.gz.sig',
+      browser_download_url: 'https://github.com/Dardcor/Dardcor-Code/releases/download/Dardcor-Code-v1.0.0/Dardcor-Code_x64.app.tar.gz.sig',
+      size: 65,
+    },
+    {
+      name: 'Dardcor-Code_1.0.0_amd64.deb',
+      browser_download_url: 'https://github.com/Dardcor/Dardcor-Code/releases/download/Dardcor-Code-v1.0.0/Dardcor-Code_1.0.0_amd64.deb',
+      size: 356424280,
+    },
+    {
+      name: 'Dardcor-Code_1.0.0_amd64.deb.sig',
+      browser_download_url: 'https://github.com/Dardcor/Dardcor-Code/releases/download/Dardcor-Code-v1.0.0/Dardcor-Code_1.0.0_amd64.deb.sig',
+      size: 65,
+    },
+    {
+      name: 'Dardcor-Code_1.0.0_arm64.deb',
+      browser_download_url: 'https://github.com/Dardcor/Dardcor-Code/releases/download/Dardcor-Code-v1.0.0/Dardcor-Code_1.0.0_arm64.deb',
+      size: 356424280,
+    },
+    {
+      name: 'Dardcor-Code_1.0.0_arm64.deb.sig',
+      browser_download_url: 'https://github.com/Dardcor/Dardcor-Code/releases/download/Dardcor-Code-v1.0.0/Dardcor-Code_1.0.0_arm64.deb.sig',
+      size: 65,
+    },
+    {
+      name: 'Dardcor-Code-1.0.0-1.x86_64.rpm',
+      browser_download_url: 'https://github.com/Dardcor/Dardcor-Code/releases/download/Dardcor-Code-v1.0.0/Dardcor-Code-1.0.0-1.x86_64.rpm',
+      size: 308336502,
+    },
+    {
+      name: 'Dardcor-Code-1.0.0-1.x86_64.rpm.sig',
+      browser_download_url: 'https://github.com/Dardcor/Dardcor-Code/releases/download/Dardcor-Code-v1.0.0/Dardcor-Code-1.0.0-1.x86_64.rpm.sig',
+      size: 65,
+    },
+    {
+      name: 'Dardcor-Code-1.0.0-1.aarch64.rpm',
+      browser_download_url: 'https://github.com/Dardcor/Dardcor-Code/releases/download/Dardcor-Code-v1.0.0/Dardcor-Code-1.0.0-1.aarch64.rpm',
+      size: 356424280,
+    },
+    {
+      name: 'Dardcor-Code-1.0.0-1.aarch64.rpm.sig',
+      browser_download_url: 'https://github.com/Dardcor/Dardcor-Code/releases/download/Dardcor-Code-v1.0.0/Dardcor-Code-1.0.0-1.aarch64.rpm.sig',
+      size: 65,
+    },
+    {
+      name: 'Dardcor-Code_1.0.0_amd64.AppImage',
+      browser_download_url: 'https://github.com/Dardcor/Dardcor-Code/releases/download/Dardcor-Code-v1.0.0/Dardcor-Code_1.0.0_amd64.AppImage',
+      size: 356424280,
+    },
+    {
+      name: 'Dardcor-Code_1.0.0_amd64.AppImage.sig',
+      browser_download_url: 'https://github.com/Dardcor/Dardcor-Code/releases/download/Dardcor-Code-v1.0.0/Dardcor-Code_1.0.0_amd64.AppImage.sig',
+      size: 65,
+    },
+    {
+      name: 'Dardcor-Code_1.0.0_aarch64.AppImage',
+      browser_download_url: 'https://github.com/Dardcor/Dardcor-Code/releases/download/Dardcor-Code-v1.0.0/Dardcor-Code_1.0.0_aarch64.AppImage',
+      size: 356424280,
+    },
+    {
+      name: 'Dardcor-Code_1.0.0_aarch64.AppImage.sig',
+      browser_download_url: 'https://github.com/Dardcor/Dardcor-Code/releases/download/Dardcor-Code-v1.0.0/Dardcor-Code_1.0.0_aarch64.AppImage.sig',
+      size: 65,
+    },
+    {
+      name: 'updater.json',
+      browser_download_url: 'https://github.com/Dardcor/Dardcor-Code/releases/download/Dardcor-Code-v1.0.0/updater.json',
+      size: 87,
+    },
+  ],
+};
+
+// ---------------------- Validation & Helpers ----------------------
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+function isValidHttpsUrl(urlString: unknown): urlString is string {
+  if (typeof urlString !== 'string' || !urlString.trim()) return false;
+  try {
+    const parsed = new URL(urlString);
+    if (parsed.protocol !== 'https:') return false;
+    const host = parsed.hostname.toLowerCase();
+    return (
+      host === 'github.com' ||
+      host.endsWith('.github.com') ||
+      host === 'objects.githubusercontent.com' ||
+      host.endsWith('.githubusercontent.com')
+    );
+  } catch {
+    return false;
+  }
+}
+
+function parseReleaseAsset(value: unknown): ReleaseAsset | null {
+  if (!isRecord(value)) return null;
+  const { name, browser_download_url, size } = value;
+
+  if (typeof name !== 'string' || !name.trim()) return null;
+  if (typeof browser_download_url !== 'string' || !isValidHttpsUrl(browser_download_url)) {
+    return null;
+  }
+
+  const validSize = typeof size === 'number' && Number.isFinite(size) && size >= 0 ? size : 0;
+
+  return {
+    name: name.trim(),
+    browser_download_url,
+    size: validSize,
+  };
+}
+
+function parseGitHubRelease(value: unknown): GitHubRelease | null {
+  if (!isRecord(value)) return null;
+  const { tag_name, name, body, published_at, html_url, assets } = value;
+
+  if (typeof tag_name !== 'string' || !tag_name.trim()) return null;
+  if (typeof html_url !== 'string' || !isValidHttpsUrl(html_url)) return null;
+
+  const publishedDate = typeof published_at === 'string' ? Date.parse(published_at) : NaN;
+  if (Number.isNaN(publishedDate)) return null;
+
+  const validAssets: ReleaseAsset[] = Array.isArray(assets)
+    ? assets.map(parseReleaseAsset).filter((a): a is ReleaseAsset => a !== null)
+    : [];
+
+  return {
+    tag_name: tag_name.trim(),
+    name: typeof name === 'string' && name.trim() ? name.trim() : tag_name.trim(),
+    body: typeof body === 'string' ? body : '',
+    published_at: new Date(publishedDate).toISOString(),
+    html_url,
+    assets: validAssets,
+  };
+}
+
+function validateReleasesResponse(data: unknown): GitHubRelease[] {
+  if (!Array.isArray(data)) {
+    throw new Error('API returned an invalid payload format (expected list of releases)');
+  }
+  return data
+    .map(parseGitHubRelease)
+    .filter((r): r is GitHubRelease => r !== null);
+}
+
+function formatBytes(bytes: number): string {
+  if (typeof bytes !== 'number' || !Number.isFinite(bytes) || bytes <= 0) return '';
+  const mb = bytes / (1024 * 1024);
+  return mb >= 1 ? `${mb.toFixed(1)} MB` : `${(bytes / 1024).toFixed(0)} KB`;
+}
+
+function formatDate(dateString: string): string {
+  const date = new Date(dateString);
+  if (Number.isNaN(date.getTime())) return '';
+  return date.toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+  });
 }
 
 function AppleIcon({ className }: { className?: string }) {
@@ -55,40 +311,47 @@ function LinuxIcon({ className }: { className?: string }) {
   );
 }
 
-function formatBytes(bytes: number): string {
-  if (!bytes) return '';
-  const mb = bytes / (1024 * 1024);
-  return mb >= 1 ? `${mb.toFixed(1)} MB` : `${(bytes / 1024).toFixed(0)} KB`;
-}
-
-function groupAssetsByOS(assets: ReleaseAsset[]) {
+function groupAssetsByOS(assets: ReleaseAsset[]): OSGroup[] {
   const filtered = assets.filter(
     (a) =>
       !a.name.endsWith('.blockmap') &&
       !a.name.endsWith('.yml') &&
       !a.name.endsWith('-latest.yml') &&
-      !a.name.includes('RELEASES')
+      !a.name.includes('RELEASES') &&
+      !a.name.endsWith('.sig') &&
+      a.name !== 'updater.json' &&
+      !a.name.endsWith('.sha256')
   );
 
-  const groups: { label: string; key: string; assets: ReleaseAsset[]; Icon: React.FC<{ className?: string }> }[] = [
-    { label: 'macOS', key: 'macos', assets: [], Icon: AppleIcon },
+  const groups: OSGroup[] = [
     { label: 'Windows', key: 'windows', assets: [], Icon: WindowsIcon },
+    { label: 'macOS', key: 'macos', assets: [], Icon: AppleIcon },
     { label: 'Linux', key: 'linux', assets: [], Icon: LinuxIcon },
   ];
 
   for (const asset of filtered) {
     const name = asset.name.toLowerCase();
-    if (name.includes('macos') || name.includes('mac') || name.endsWith('.dmg')) {
+    if (
+      name.endsWith('.exe') ||
+      name.endsWith('.msi') ||
+      name.includes('win') ||
+      name.includes('windows')
+    ) {
       groups[0].assets.push(asset);
-    } else if (name.includes('windows') || name.includes('win') || name.endsWith('.exe')) {
+    } else if (
+      name.endsWith('.dmg') ||
+      name.includes('.app.tar.gz') ||
+      name.includes('macos') ||
+      name.includes('darwin') ||
+      name.includes('mac')
+    ) {
       groups[1].assets.push(asset);
     } else if (
-      name.includes('linux') ||
-      name.includes('.appimage') ||
       name.endsWith('.deb') ||
       name.endsWith('.rpm') ||
+      name.includes('.appimage') ||
       name.endsWith('.tar.gz') ||
-      name.includes('snap')
+      name.includes('linux')
     ) {
       groups[2].assets.push(asset);
     }
@@ -96,9 +359,17 @@ function groupAssetsByOS(assets: ReleaseAsset[]) {
   return groups;
 }
 
-function parseChangelog(body: string): { type: string; items: string[] }[] {
-  const sections: { type: string; items: string[] }[] = [];
-  let current: { type: string; items: string[] } | null = null;
+function getVerificationAssets(assets: ReleaseAsset[]): ReleaseAsset[] {
+  return assets.filter((a) => {
+    const name = a.name.toLowerCase();
+    return name.endsWith('.sig') || name === 'updater.json' || name.endsWith('.sha256');
+  });
+}
+
+function parseChangelog(body: string): ChangelogSection[] {
+  if (typeof body !== 'string' || !body.trim()) return [];
+  const sections: ChangelogSection[] = [];
+  let current: ChangelogSection | null = null;
   const lines = body.split('\n');
   for (const line of lines) {
     const trimmed = line.trim();
@@ -120,7 +391,7 @@ function parseChangelog(body: string): { type: string; items: string[] }[] {
   return sections;
 }
 
-function DownloadCard({ group }: { group: { label: string; key: string; assets: ReleaseAsset[]; Icon: React.FC<{ className?: string }> } }) {
+function DownloadCard({ group }: { group: OSGroup }) {
   const { Icon } = group;
   return (
     <div className="card-base p-5 flex flex-col">
@@ -132,7 +403,7 @@ function DownloadCard({ group }: { group: { label: string; key: string; assets: 
           <h3 className="text-sm font-semibold text-text-primary font-display">{group.label}</h3>
           <p className="text-xs text-text-tertiary">
             {group.assets.length > 0
-              ? `${group.assets.length} download${group.assets.length > 1 ? 's' : ''} available`
+              ? `${group.assets.length} package${group.assets.length > 1 ? 's' : ''} available`
               : 'Not available for this platform'}
           </p>
         </div>
@@ -140,24 +411,43 @@ function DownloadCard({ group }: { group: { label: string; key: string; assets: 
       <div className="space-y-2 flex-1">
         {group.assets.length > 0 ? (
           group.assets.map((asset) => {
+            if (!isValidHttpsUrl(asset.browser_download_url)) return null;
+
             const nameLower = asset.name.toLowerCase();
             let arch = '';
-            if (nameLower.includes('arm64') || nameLower.includes('arm'))
+            if (nameLower.includes('universal')) {
+              arch = 'Universal';
+            } else if (nameLower.includes('aarch64') || nameLower.includes('arm64')) {
               arch = 'ARM64';
-            else if (nameLower.includes('x64') || nameLower.includes('x86_64') || nameLower.includes('intel') || nameLower.includes('amd64'))
+            } else if (
+              nameLower.includes('x64') ||
+              nameLower.includes('x86_64') ||
+              nameLower.includes('amd64') ||
+              nameLower.includes('intel')
+            ) {
               arch = 'x64';
-            else if (nameLower.includes('apple') || nameLower.includes('silicon'))
-              arch = 'Apple Silicon';
+            }
 
             let fileType = '';
-            if (asset.name.endsWith('.dmg')) fileType = '.dmg';
-            else if (asset.name.endsWith('.exe') && nameLower.includes('portable'))
+            if (asset.name.endsWith('.dmg')) {
+              fileType = '.dmg';
+            } else if (asset.name.endsWith('.msi')) {
+              fileType = 'MSI Installer';
+            } else if (asset.name.endsWith('.exe') && nameLower.includes('portable')) {
               fileType = 'Portable';
-            else if (asset.name.endsWith('.exe')) fileType = 'Installer';
-            else if (asset.name.endsWith('.AppImage')) fileType = 'AppImage';
-            else if (asset.name.endsWith('.deb')) fileType = '.deb';
-            else if (asset.name.endsWith('.rpm')) fileType = '.rpm';
-            else if (asset.name.endsWith('.tar.gz')) fileType = '.tar.gz';
+            } else if (asset.name.endsWith('.exe')) {
+              fileType = 'User Installer (.exe)';
+            } else if (asset.name.endsWith('.AppImage') || asset.name.endsWith('.appimage')) {
+              fileType = 'AppImage';
+            } else if (asset.name.endsWith('.deb')) {
+              fileType = '.deb';
+            } else if (asset.name.endsWith('.rpm')) {
+              fileType = '.rpm';
+            } else if (asset.name.endsWith('.app.tar.gz')) {
+              fileType = 'Archive (.tar.gz)';
+            } else if (asset.name.endsWith('.tar.gz')) {
+              fileType = '.tar.gz';
+            }
 
             const label = [arch, fileType].filter(Boolean).join(' \u00b7 ');
 
@@ -166,7 +456,8 @@ function DownloadCard({ group }: { group: { label: string; key: string; assets: 
                 key={asset.name}
                 href={asset.browser_download_url}
                 target="_blank"
-                rel="noreferrer"
+                rel="noopener noreferrer"
+                aria-label={`Download ${label || asset.name} (${formatBytes(asset.size)})`}
                 className="flex items-center justify-between gap-3 w-full px-3.5 py-2.5 rounded-xl bg-dc-50/30 hover:bg-dc-50 border border-transparent hover:border-dc-200 transition-all group"
               >
                 <div className="min-w-0">
@@ -175,7 +466,7 @@ function DownloadCard({ group }: { group: { label: string; key: string; assets: 
                   </span>
                   <span className="text-xs text-text-tertiary">{formatBytes(asset.size)}</span>
                 </div>
-                <Download size={14} className="text-text-tertiary group-hover:text-dc-600 shrink-0 transition-colors" />
+                <Download size={14} className="text-text-tertiary group-hover:text-dc-600 shrink-0 transition-colors" aria-hidden="true" />
               </a>
             );
           })
@@ -191,292 +482,341 @@ function DownloadCard({ group }: { group: { label: string; key: string; assets: 
   );
 }
 
+// ---------------------- Main Component ----------------------
+
 export default function ReleasePage() {
-  const [releases, setReleases] = useState<GitHubRelease[]>([]);
+  const [releases, setReleases] = useState<GitHubRelease[]>([FALLBACK_RELEASE]);
   const [selectedIndex, setSelectedIndex] = useState(0);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<ReleaseError | null>(null);
   const [showChangelog, setShowChangelog] = useState(false);
   const [versionOpen, setVersionOpen] = useState(false);
 
   useEffect(() => {
-    document.title = 'Releases — Dardcor Code';
+    document.title = 'Releases - Dardcor Code';
     return () => {
-      document.title = 'Dardcor Code — Agent-First IDE for Autonomous Development';
+      document.title = 'Dardcor Code - The open source AI code editor | Your home for multi-agent development';
     };
   }, []);
 
-  useEffect(() => {
-    let cancelled = false;
-    fetch(GITHUB_API)
-      .then((r) => {
-        if (!r.ok) throw new Error(`GitHub API responded with ${r.status}`);
-        return r.json();
-      })
-      .then((data: GitHubRelease[]) => {
-        if (!cancelled && Array.isArray(data)) {
-          setReleases(data.slice(0, 15));
-          setLoading(false);
-        }
-      })
-      .catch((e: Error) => {
-        if (!cancelled) {
-          setError(e.message);
-          setLoading(false);
-        }
+  const loadReleases = useCallback(async (signal?: AbortSignal) => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const response = await fetch(GITHUB_API, {
+        signal,
+        headers: {
+          Accept: 'application/vnd.github.v3+json',
+        },
       });
-    return () => { cancelled = true; };
+
+      if (response.status === 403) {
+        const remaining = response.headers.get('x-ratelimit-remaining');
+        const resetHeader = response.headers.get('x-ratelimit-reset');
+        const resetTime = resetHeader ? new Date(parseInt(resetHeader, 10) * 1000) : null;
+
+        setError({
+          type: 'rate_limit',
+          message:
+            remaining === '0'
+              ? 'GitHub API rate limit reached for anonymous requests. Showing verified release package.'
+              : 'GitHub API access was temporarily restricted. Showing verified release package.',
+          resetTime,
+        });
+        return;
+      }
+
+      if (!response.ok) {
+        throw new Error(`GitHub API responded with status ${response.status}`);
+      }
+
+      const rawData: unknown = await response.json();
+      const validated = validateReleasesResponse(rawData);
+
+      if (validated.length > 0) {
+        setReleases(validated.slice(0, 15));
+        setSelectedIndex(0);
+      }
+    } catch (err: unknown) {
+      if (signal?.aborted) return;
+
+      const isNetwork = err instanceof TypeError && err.message.toLowerCase().includes('fetch');
+      setError({
+        type: isNetwork ? 'network' : 'generic',
+        message: err instanceof Error ? err.message : 'Unable to connect to GitHub releases.',
+      });
+    } finally {
+      if (!signal?.aborted) {
+        setLoading(false);
+      }
+    }
   }, []);
 
-  const release = releases[selectedIndex] || null;
-  const osGroups = release ? groupAssetsByOS(release.assets) : [];
+  useEffect(() => {
+    const controller = new AbortController();
+    loadReleases(controller.signal);
+    return () => controller.abort();
+  }, [loadReleases]);
+
+  const release = releases[selectedIndex] || FALLBACK_RELEASE;
+  const osGroups = groupAssetsByOS(release.assets);
+  const verificationAssets = getVerificationAssets(release.assets);
   const changelogSections = release?.body ? parseChangelog(release.body) : [];
 
   return (
-    <>
-      <AnimatedBackground />
-      <main className="relative z-10">
-        <section className="relative min-h-screen pt-28 pb-16 px-4 sm:px-6 overflow-hidden">
-          <div className="relative z-10 max-w-5xl mx-auto">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4 }}
-              className="text-center mb-10"
+    <main className="relative z-10">
+      <section className="relative min-h-screen pt-28 pb-16 px-4 sm:px-6 overflow-hidden">
+        <div className="relative z-10 max-w-5xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4 }}
+            className="text-center mb-10"
+          >
+            <span className="section-eyebrow mb-3">Downloads</span>
+            <h1 className="text-4xl md:text-5xl font-display font-bold text-text-primary tracking-tight">
+              Download <span className="text-gradient">Dardcor Code</span>
+            </h1>
+            <p className="mt-2 text-text-secondary max-w-xl mx-auto">
+              Get the latest version for your platform. Verified releases with SHA checksums, Minisign signatures, and automatic updates.
+            </p>
+          </motion.div>
+
+          {error && (
+            <div className="mb-6 p-4 rounded-xl bg-purple-950/30 border border-purple-800/40 flex items-start gap-3 text-xs sm:text-sm text-purple-200">
+              <AlertCircle size={18} className="text-purple-400 shrink-0 mt-0.5" />
+              <div className="flex-1">
+                <p>{error.message}</p>
+                {error.resetTime && (
+                  <p className="text-xs text-[#b3a8c9] mt-1 flex items-center gap-1">
+                    <Clock size={12} />
+                    <span>Rate limit resets at: {error.resetTime.toLocaleTimeString()}</span>
+                  </p>
+                )}
+              </div>
+              <button
+                type="button"
+                onClick={() => { void loadReleases(); }}
+                disabled={loading}
+                className="p-1.5 rounded-lg hover:bg-purple-900/50 text-purple-300 hover:text-white transition-colors cursor-pointer"
+                title="Refresh releases"
+              >
+                <RefreshCw size={14} className={loading ? 'animate-spin' : ''} />
+              </button>
+            </div>
+          )}
+
+          {/* Normal Releases Selector & Download View */}
+          <div className="card-base overflow-hidden">
+            <button
+              onClick={() => setVersionOpen(!versionOpen)}
+              className="w-full flex items-center justify-between px-5 py-4 hover:bg-dc-50/30 transition-colors text-left"
             >
-              <span className="section-eyebrow mb-3">Downloads</span>
-              <h1 className="text-4xl md:text-5xl font-display font-bold text-text-primary tracking-tight">
-                Download <span className="text-gradient">Dardcor Code</span>
-              </h1>
-              <p className="mt-2 text-text-secondary max-w-xl mx-auto">
-                Get the latest version for your platform. Auto-updates enabled by default.
-              </p>
-            </motion.div>
-
-            {error && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="flex items-center justify-center gap-2 bg-red-50 border border-red-200 rounded-xl px-5 py-4 mb-8 text-red-600 max-w-2xl mx-auto"
-              >
-                <AlertCircle size={18} />
-                <span className="text-sm font-medium">Could not load release data: {error}</span>
-              </motion.div>
-            )}
-
-            {loading ? (
-              <div className="grid md:grid-cols-3 gap-5">
-                {[1, 2, 3].map((i) => (
-                  <div key={i} className="card-base p-6">
-                    <div className="flex items-center gap-3 mb-4 pb-3 border-b border-border-default">
-                      <div className="w-9 h-9 rounded-xl bg-dc-50" />
-                      <div className="space-y-1.5 flex-1">
-                        <div className="h-3 w-20 bg-dc-50 rounded" />
-                        <div className="h-2.5 w-24 bg-dc-50 rounded" />
-                      </div>
-                    </div>
-                    <div className="space-y-2">
-                      <div className="h-10 bg-dc-50/50 rounded-xl" />
-                      <div className="h-10 bg-dc-50/50 rounded-xl" />
-                    </div>
-                  </div>
-                ))}
+              <div className="flex items-center gap-3 min-w-0">
+                <ChevronDown
+                  size={16}
+                  className={`text-text-tertiary shrink-0 transition-transform ${
+                    versionOpen ? 'rotate-0' : '-rotate-90'
+                  }`}
+                />
+                <div className="flex items-center gap-2.5 min-w-0">
+                  <Hash size={15} className="text-dc-500 shrink-0" />
+                  <span className="font-semibold text-text-primary font-display">
+                    {`Dardcor Code ${release.tag_name}`}
+                  </span>
+                </div>
               </div>
-            ) : (
-              <div className="card-base overflow-hidden">
-                <button
-                  onClick={() => setVersionOpen(!versionOpen)}
-                  className="w-full flex items-center justify-between px-5 py-4 hover:bg-dc-50/30 transition-colors text-left"
+              <div className="flex items-center gap-3 shrink-0">
+                {!versionOpen && (
+                  <span className="text-xs text-text-tertiary">
+                    {formatDate(release.published_at)}
+                  </span>
+                )}
+                <span className="text-xs text-text-tertiary">
+                  {releases.length} release{releases.length !== 1 ? 's' : ''}
+                </span>
+              </div>
+            </button>
+
+            <AnimatePresence initial={false}>
+              {versionOpen && (
+                <motion.div
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: 'auto', opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  transition={{ duration: 0.25 }}
+                  className="overflow-hidden border-t border-border-default"
                 >
-                  <div className="flex items-center gap-3 min-w-0">
-                    <ChevronDown
-                      size={16}
-                      className={`text-text-tertiary shrink-0 transition-transform ${
-                        versionOpen ? 'rotate-0' : '-rotate-90'
-                      }`}
-                    />
-                    <div className="flex items-center gap-2.5 min-w-0">
-                      <Hash size={15} className="text-dc-500 shrink-0" />
-                      <span className="font-semibold text-text-primary font-display">
-                        {release ? `Dardcor Code ${release.tag_name}` : 'Select version'}
-                      </span>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-3 shrink-0">
-                    {!versionOpen && release && (
-                      <span className="text-xs text-text-tertiary">
-                        {new Date(release.published_at).toLocaleDateString('en-US', {
-                          month: 'short', day: 'numeric', year: 'numeric',
-                        })}
-                      </span>
-                    )}
-                    <span className="text-xs text-text-tertiary">
-                      {releases.length} release{releases.length !== 1 ? 's' : ''}
-                    </span>
-                  </div>
-                </button>
-
-                <AnimatePresence initial={false}>
-                  {versionOpen && (
-                    <motion.div
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: 'auto', opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.25 }}
-                      className="overflow-hidden border-t border-border-default"
-                    >
-                      <div className="divide-y divide-border-default">
-                        {releases.map((r, i) => (
-                          <button
-                            key={r.tag_name}
-                            onClick={() => {
-                              setSelectedIndex(i);
-                              setVersionOpen(false);
-                              setShowChangelog(false);
-                            }}
-                            className={`w-full flex items-center justify-between px-5 py-3 text-sm transition-colors text-left ${
-                              i === selectedIndex
-                                ? 'bg-dc-50 text-dc-700'
-                                : 'text-text-secondary hover:bg-dc-50/30 hover:text-text-primary'
-                            }`}
-                          >
-                            <div className="flex items-center gap-3 min-w-0">
-                              {i === selectedIndex ? (
-                                <CheckCircle size={14} className="text-dc-600 shrink-0" />
-                              ) : (
-                                <span className="w-3.5 shrink-0" />
-                              )}
-                              <span className="font-medium">{r.tag_name}</span>
-                              {i === 0 && (
-                                <span className="text-[10px] font-semibold uppercase tracking-wider text-dc-600 bg-dc-100 px-1.5 py-0.5 rounded">
-                                  Latest
-                                </span>
-                              )}
-                            </div>
-                            <span className="text-xs text-text-tertiary shrink-0 ml-4">
-                              {new Date(r.published_at).toLocaleDateString('en-US', {
-                                month: 'short', day: 'numeric', year: 'numeric',
-                              })}
+                  <div className="divide-y divide-border-default">
+                    {releases.map((r, i) => (
+                      <button
+                        key={r.tag_name}
+                        onClick={() => {
+                          setSelectedIndex(i);
+                          setVersionOpen(false);
+                          setShowChangelog(false);
+                        }}
+                        className={`w-full flex items-center justify-between px-5 py-3 text-sm transition-colors text-left ${
+                          i === selectedIndex
+                            ? 'bg-dc-50 text-dc-700'
+                            : 'text-text-secondary hover:bg-dc-50/30 hover:text-text-primary'
+                        }`}
+                      >
+                        <div className="flex items-center gap-3 min-w-0">
+                          {i === selectedIndex ? (
+                            <CheckCircle size={14} className="text-dc-600 shrink-0" />
+                          ) : (
+                            <span className="w-3.5 shrink-0" />
+                          )}
+                          <span className="font-medium">{r.tag_name}</span>
+                          {i === 0 && (
+                            <span className="text-[10px] font-semibold uppercase tracking-wider text-dc-600 bg-dc-100 px-1.5 py-0.5 rounded">
+                              Latest
                             </span>
-                          </button>
-                        ))}
-                      </div>
-
-                      {release && (
-                        <div className="px-5 py-5 border-t border-border-default">
-                          <h3 className="text-xs font-semibold text-text-tertiary uppercase tracking-wider mb-4">
-                            Downloads for {release.tag_name}
-                          </h3>
-                          <AnimatePresence mode="wait">
-                            <motion.div
-                              key={release.tag_name}
-                              initial={{ opacity: 0 }}
-                              animate={{ opacity: 1 }}
-                              exit={{ opacity: 0 }}
-                              transition={{ duration: 0.2 }}
-                              className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4"
-                            >
-                              {osGroups.map((group) => (
-                                <DownloadCard key={group.key} group={group} />
-                              ))}
-                            </motion.div>
-                          </AnimatePresence>
+                          )}
                         </div>
-                      )}
-
-                      <div className="flex items-center gap-4 px-5 py-3 border-t border-border-default bg-dc-50/20">
-                        {release?.body && (
-                          <button
-                            onClick={() => setShowChangelog(!showChangelog)}
-                            className={`flex items-center gap-1.5 text-xs transition-colors ${
-                              showChangelog ? 'text-dc-700' : 'text-text-tertiary hover:text-text-primary'
-                            }`}
-                          >
-                            <FileCode size={12} />
-                            {showChangelog ? 'Hide changelog' : 'View changelog'}
-                          </button>
-                        )}
-                        {release && (
-                          <a
-                            href={release.html_url}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="flex items-center gap-1.5 text-xs text-text-tertiary hover:text-text-primary transition-colors"
-                          >
-                            <ExternalLink size={12} />
-                            View on GitHub
-                          </a>
-                        )}
-                        <a
-                          href="https://github.com/Dardcor/Dardcor-Code/releases"
-                          target="_blank"
-                          rel="noreferrer"
-                          className="flex items-center gap-1.5 text-xs text-text-tertiary hover:text-text-primary transition-colors ml-auto"
-                        >
-                          All releases
-                          <ExternalLink size={10} />
-                        </a>
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
-            )}
-
-            {showChangelog && release?.body && (
-              <motion.div
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="card-base p-5 md:p-6 mt-5"
-              >
-                <h2 className="text-sm font-semibold text-text-primary font-display mb-4">
-                  {release.tag_name} Changelog
-                </h2>
-                {changelogSections.length > 0 ? (
-                  <div className="space-y-4">
-                    {changelogSections.map((section, si) => (
-                      <div key={si}>
-                        <h3 className="text-xs font-semibold text-text-primary uppercase tracking-wider mb-2 flex items-center gap-2">
-                          <span className="w-1.5 h-1.5 rounded-full bg-dc-500 shrink-0" />
-                          {section.type}
-                        </h3>
-                        <ul className="space-y-1.5">
-                          {section.items.map((item, ii) => (
-                            <li key={ii} className="flex items-start gap-2 text-sm text-text-secondary ml-4">
-                              <span className="w-1 h-1 rounded-full bg-dc-400/60 mt-2 shrink-0" />
-                              {item}
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
+                        <span className="text-xs text-text-tertiary shrink-0 ml-4">
+                          {formatDate(r.published_at)}
+                        </span>
+                      </button>
                     ))}
                   </div>
-                ) : (
-                  <div className="text-sm text-text-secondary whitespace-pre-line leading-relaxed">
-                    {release.body}
-                  </div>
-                )}
-              </motion.div>
-            )}
+                </motion.div>
+              )}
+            </AnimatePresence>
 
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.4 }}
-              className="text-center mt-10"
-            >
-              <Link
-                to="/"
-                className="inline-flex items-center gap-1.5 text-sm text-text-tertiary hover:text-dc-600 transition-colors"
+            {/* Main OS Downloads Grid */}
+            <div className="px-5 py-5 border-t border-border-default">
+              <h3 className="text-xs font-semibold text-text-tertiary uppercase tracking-wider mb-4">
+                Downloads for {release.tag_name}
+              </h3>
+              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {osGroups.map((group) => (
+                  <DownloadCard key={group.key} group={group} />
+                ))}
+              </div>
+
+              {/* Verification & Signatures Panel */}
+              {verificationAssets.length > 0 && (
+                <div className="mt-8 pt-6 border-t border-border-default">
+                  <div className="flex items-center gap-2 mb-3">
+                    <ShieldCheck size={16} className="text-emerald-400" />
+                    <h4 className="text-xs font-semibold text-text-primary uppercase tracking-wider font-display">
+                      Minisign Signatures &amp; Checksums
+                    </h4>
+                  </div>
+                  <p className="text-xs text-text-tertiary mb-3">
+                    Verify package integrity before installing with our published detached signatures (.sig) and update manifest.
+                  </p>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
+                    {verificationAssets.map((asset) => (
+                      <a
+                        key={asset.name}
+                        href={asset.browser_download_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center justify-between p-2.5 rounded-lg bg-dc-50/20 hover:bg-dc-50/40 border border-border-default text-xs text-text-secondary hover:text-text-primary transition-colors truncate"
+                      >
+                        <span className="truncate mr-2 font-mono text-[11px]">{asset.name}</span>
+                        <Download size={12} className="shrink-0 text-text-tertiary" />
+                      </a>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Card Footer Links */}
+            <div className="flex items-center gap-4 px-5 py-3 border-t border-border-default bg-dc-50/20">
+              {release?.body && (
+                <button
+                  onClick={() => setShowChangelog(!showChangelog)}
+                  className={`flex items-center gap-1.5 text-xs transition-colors ${
+                    showChangelog ? 'text-dc-700' : 'text-text-tertiary hover:text-text-primary'
+                  }`}
+                >
+                  <FileCode size={12} />
+                  {showChangelog ? 'Hide changelog' : 'View changelog'}
+                </button>
+              )}
+              {release && isValidHttpsUrl(release.html_url) && (
+                <a
+                  href={release.html_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-1.5 text-xs text-text-tertiary hover:text-text-primary transition-colors"
+                >
+                  <ExternalLink size={12} aria-hidden="true" />
+                  View on GitHub
+                </a>
+              )}
+              <a
+                href={GITHUB_RELEASES_PAGE}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-1.5 text-xs text-text-tertiary hover:text-text-primary transition-colors ml-auto"
               >
-                <ArrowLeft size={14} />
-                Back to home
-              </Link>
-            </motion.div>
+                All releases
+                <ExternalLink size={10} aria-hidden="true" />
+              </a>
+            </div>
           </div>
-        </section>
-      </main>
-      <Footer />
-    </>
+
+          {/* Changelog Section */}
+          {showChangelog && release?.body && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="card-base p-5 md:p-6 mt-5"
+            >
+              <h2 className="text-sm font-semibold text-text-primary font-display mb-4">
+                {release.tag_name} Changelog
+              </h2>
+              {changelogSections.length > 0 ? (
+                <div className="space-y-4">
+                  {changelogSections.map((section, si) => (
+                    <div key={si}>
+                      <h3 className="text-xs font-semibold text-text-primary uppercase tracking-wider mb-2 flex items-center gap-2">
+                        <span className="w-1.5 h-1.5 rounded-full bg-dc-500 shrink-0" />
+                        {section.type}
+                      </h3>
+                      <ul className="space-y-1.5">
+                        {section.items.map((item, ii) => (
+                          <li key={ii} className="flex items-start gap-2 text-sm text-text-secondary ml-4">
+                            <span className="w-1 h-1 rounded-full bg-dc-400/60 mt-2 shrink-0" />
+                            {item}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-sm text-text-secondary whitespace-pre-line leading-relaxed">
+                  {release.body}
+                </div>
+              )}
+            </motion.div>
+          )}
+
+          {/* Return Home link */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.4 }}
+            className="text-center mt-10"
+          >
+            <Link
+              to="/"
+              className="inline-flex items-center gap-1.5 text-sm text-text-tertiary hover:text-dc-600 transition-colors"
+            >
+              <ArrowLeft size={14} />
+              Back to home
+            </Link>
+          </motion.div>
+        </div>
+      </section>
+    </main>
   );
 }
