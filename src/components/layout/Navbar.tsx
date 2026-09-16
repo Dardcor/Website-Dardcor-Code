@@ -141,13 +141,13 @@ export default function Navbar() {
       <div className="fixed top-0 inset-x-0 z-50 bg-[#120a2e]/95 border-b border-purple-900/30 text-xs py-2 px-4 text-center text-[#c4b5fd] backdrop-blur-md">
         <div className="max-w-7xl mx-auto flex items-center justify-center gap-2">
           <span className="font-semibold bg-purple-500/20 text-purple-300 px-2 py-0.5 rounded text-[10px] uppercase tracking-wider border border-purple-500/30">
-            v1.132
+            v1.0.0
           </span>
           <span className="hidden sm:inline text-purple-200">
             Dardcor Code is now available with autonomous multi-agent orchestration, Monaco engine, and native PTY terminal.
           </span>
           <span className="sm:hidden text-purple-200">
-            Dardcor Code v1.132 is live.
+            Dardcor Code v1.0.0 is live.
           </span>
           <Link
             to="/release"

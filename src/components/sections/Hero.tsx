@@ -164,7 +164,7 @@ export default function Hero() {
               className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-950/70 border border-purple-800/40 text-xs text-purple-200 mb-6"
             >
               <span className="w-2 h-2 rounded-full bg-purple-400 animate-pulse" />
-              <span className="font-semibold text-purple-300">v1.132</span>
+              <span className="font-semibold text-purple-300">v1.0.0</span>
               <span className="text-purple-400/60">•</span>
               <span>Open Source Multi-Agent IDE</span>
             </motion.div>
