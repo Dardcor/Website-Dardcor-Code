@@ -3,4 +3,4 @@ User-agent: *
 Allow: /
 
 # Sitemap
-Sitemap: https://dardcor-code.web.id/sitemap.xml
+Sitemap: https://www.dardcor-code.web.id/sitemap.xml

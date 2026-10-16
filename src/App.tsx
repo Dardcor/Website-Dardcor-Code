@@ -25,16 +25,22 @@ import FeaturesCustomizationsPage from './pages/FeaturesCustomizationsPage';
 import FeaturesEnterprisePage from './pages/FeaturesEnterprisePage';
 import FeaturesExtensibilityPage from './pages/FeaturesExtensibilityPage';
 import DocsPage from './pages/DocsPage';
+import DocsArticlePage from './pages/DocsArticlePage';
 import ApiPage from './pages/ApiPage';
 import FaqPage from './pages/FaqPage';
 import BlogPage from './pages/BlogPage';
 import LearnPage from './pages/LearnPage';
 import McpPage from './pages/McpPage';
+import { findDocsArticle } from './data/docsContent';
 
 function ScrollToTop() {
   const { pathname } = useLocation();
   useEffect(() => {
     window.scrollTo(0, 0);
+    const canonicalPath = findDocsArticle(pathname)?.path ?? (pathname.replace(/\/+$/, '') || '/');
+    const canonicalUrl = `https://www.dardcor-code.web.id${canonicalPath === '/' ? '/' : canonicalPath}`;
+    document.querySelector<HTMLLinkElement>('link[rel="canonical"]')?.setAttribute('href', canonicalUrl);
+    document.querySelector<HTMLMetaElement>('meta[property="og:url"]')?.setAttribute('content', canonicalUrl);
   }, [pathname]);
   return null;
 }
@@ -74,13 +80,16 @@ function App() {
             <Route path="/Download" element={<DownloadPage />} />
             <Route path="/release" element={<ReleasePage />} />
             <Route path="/updates" element={<ReleasePage />} />
+            <Route path="/updates/*" element={<DocsArticlePage />} />
             <Route path="/features/agents" element={<FeaturesAgentsPage />} />
             <Route path="/features/models" element={<FeaturesModelsPage />} />
             <Route path="/features/customizations" element={<FeaturesCustomizationsPage />} />
             <Route path="/features/enterprise" element={<FeaturesEnterprisePage />} />
             <Route path="/features/extensibility" element={<FeaturesExtensibilityPage />} />
             <Route path="/docs" element={<DocsPage />} />
+            <Route path="/docs/*" element={<DocsArticlePage />} />
             <Route path="/api" element={<ApiPage />} />
+            <Route path="/api/*" element={<DocsArticlePage />} />
             <Route path="/faq" element={<FaqPage />} />
             <Route path="/docs/supporting/faq" element={<FaqPage />} />
             <Route path="/blog" element={<BlogPage />} />
